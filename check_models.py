@@ -100,4 +100,4 @@ if __name__ == "__main__":
         for m in working:
             f.write(m + "\n")
 
-    print("\nСписок рабочих моделей сохранён в working_models.txt")
+    print("\nСписок  рабочих моделей сохранён в working_models.txt")
