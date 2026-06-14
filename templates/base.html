@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}BARAVKO{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<nav class="navbar">
+    <a href="/" class="logo" id="logo">BARAVKO</a>
+    <div class="nav-right">
+        {% if user %}
+        <div class="profile-menu" id="profileMenu">
+            <div class="profile-trigger" onclick="toggleProfile()">
+                <div class="profile-avatar">
+                    {% if user.avatar %}
+                    <img src="{{ user.avatar }}" alt="{{ user.name }}">
+                    {% else %}
+                    <span>{{ user.name[0] }}</span>
+                    {% endif %}
+                </div>
+                <span class="profile-name">{{ user.name }}</span>
+                <svg class="profile-arrow" viewBox="0 0 24 24">
+                    <path d="M6 9l6 6 6-6"/>
+                </svg>
+            </div>
+            <div class="profile-dropdown" id="profileDropdown">
+                <div class="dropdown-header">
+                    <div class="dropdown-avatar">
+                        {% if user.avatar %}
+                        <img src="{{ user.avatar }}" alt="{{ user.name }}">
+                        {% else %}
+                        <span>{{ user.name[0] }}</span>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <div class="dropdown-name">{{ user.name }}</div>
+                        <div class="dropdown-email">{{ user.email }}</div>
+                    </div>
+                </div>
+                <div class="dropdown-divider"></div>
+                <a href="/profile">
+                    <svg viewBox="0 0 24 24">
+                        <circle cx="12" cy="8" r="4"/>
+                        <path d="M4 20c0-4 4-7 8-7s8 3 8 7"/>
+                    </svg>
+                    Мой профиль
+                </a>
+                <a href="/settings">
+                    <svg viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="3"/>
+                        <path d="M12 1v4M12 19v4M1 12h4M19 12h4"/>
+                    </svg>
+                    Настройки
+                </a>
+                <a href="/history">
+                    <svg viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10"/>
+                        <polyline points="12 6 12 12 16 14"/>
+                    </svg>
+                    История судов
+                </a>
+                <div class="dropdown-divider"></div>
+                <a href="/logout" class="logout-link">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/>
+                    </svg>
+                    Выйти
+                </a>
+            </div>
+        </div>
+        {% else %}
+        <a href="/login" class="btn-login">Войти</a>
+        {% endif %}
+    </div>
+</nav>
+
+<main>
+    {% block content %}{% endblock %}
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        // Этот вызов мгновенно превратит теги с атрибутом data-lucide в красивые векторы
+        lucide.createIcons();
+    </script>
+</main>
+
+<footer>
+    <a href="/about">О нас</a>
+    <a href="https://github.com">GitHub</a>
+    <a href="/contact">Контакты</a>
+    <span>BARAVKO &copy; 2026</span>
+</footer>
+
+<div class="particles" id="particles"></div>
+
+<audio id="doorSound" src="{{ url_for('static', filename='sfx/door.mp3') }}" preload="auto"></audio>
+<audio id="gavelClick" src="{{ url_for('static', filename='sfx/gavel-click.mp3') }}" preload="auto"></audio>
+<audio id="organSound" src="{{ url_for('static', filename='sfx/organ.mp3') }}" preload="auto"></audio>
+
+<script>
+    function toggleProfile() {
+        var dropdown = document.getElementById("profileDropdown");
+        var arrow = document.querySelector(".profile-arrow");
+        dropdown.classList.toggle("open");
+        arrow.classList.toggle("open");
+    }
+
+    document.addEventListener("click", function(e) {
+        var menu = document.getElementById("profileMenu");
+        if (menu && !menu.contains(e.target)) {
+            var dropdown = document.getElementById("profileDropdown");
+            var arrow = document.querySelector(".profile-arrow");
+            dropdown.classList.remove("open");
+            arrow.classList.remove("open");
+        }
+    });
+
+    (function() {
+        var container = document.getElementById("particles");
+        for (var i = 0; i < 30; i++) {
+            var p = document.createElement("div");
+            p.className = "particle";
+            p.style.left = Math.random() * 100 + "%";
+            var size = Math.random() * 4 + 2;
+            p.style.width = size + "px";
+            p.style.height = size + "px";
+            p.style.animationDuration = (Math.random() * 10 + 8) + "s";
+            p.style.animationDelay = (Math.random() * 12) + "s";
+            container.appendChild(p);
+        }
+    })();
+
+    (function() {
+        var els = document.querySelectorAll(".feature, .welcome-right, .live-preview, .quote-section");
+        function check() {
+            els.forEach(function(el) {
+                var top = el.getBoundingClientRect().top;
+                if (top < window.innerHeight - 50) {
+                    el.classList.add("visible");
+                }
+            });
+        }
+        els.forEach(function(el) { el.classList.add("fade-in"); });
+        window.addEventListener("scroll", check);
+        check();
+    })();
+
+    document.addEventListener("DOMContentLoaded", function() {
+        var door = document.getElementById("doorSound");
+        if (door) {
+            door.volume = 0.3;
+            door.play().catch(function() {});
+        }
+    });
+
+    document.addEventListener("click", function(e) {
+        if (e.target.closest("button, .btn-start, .btn-login, .btn-primary, .btn-outline, .feature, .step")) {
+            var gavel = document.getElementById("gavelClick");
+            if (gavel) {
+                gavel.volume = 0.2;
+                gavel.currentTime = 0;
+                gavel.play().catch(function() {});
+            }
+        }
+    });
+
+    // Пасхалка: Верховный суд
+    (function() {
+        var logo = document.getElementById("logo");
+        var count = 0;
+        var timer = null;
+
+        logo.addEventListener("click", function(e) {
+            e.preventDefault();
+            count++;
+            clearTimeout(timer);
+            timer = setTimeout(function() { count = 0; }, 2000);
+
+            if (count >= 15) {
+                count = 0;
+                document.body.classList.add("supreme-court");
+                logo.textContent = "ВЕРХОВНЫЙ БОРАВКО";
+
+                var particles = document.querySelectorAll(".particle");
+                particles.forEach(function(p) {
+                    p.style.background = "#ffd700";
+                    p.style.boxShadow = "0 0 10px #ffd700";
+                    p.style.width = (Math.random() * 6 + 3) + "px";
+                    p.style.height = p.style.width;
+                });
+
+                var organ = document.getElementById("organSound");
+                if (organ) {
+                    organ.volume = 0.5;
+                    organ.play().catch(function() {});
+                }
+            }
+        });
+    })();
+</script>
+</body>
+</html>

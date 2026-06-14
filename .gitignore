@@ -1,0 +1,41 @@
+# Secrets
+.env
+.evn
+*.key
+*.pem
+
+# Python
+__pycache__/
+*.py[cod]
+*.so
+.Python
+venv/
+.venv/
+env/
+ENV/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+court_log.txt
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project specific
+ais.py
+check_models_local.py
