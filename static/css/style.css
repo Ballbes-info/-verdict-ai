@@ -88,7 +88,7 @@ main {
 
 .btn-login:hover {
     background: #8b6914;
-    color: #f5e2a6;
+    color: #fff;
     transform: translateY(-1px);
 }
 
@@ -184,7 +184,7 @@ main {
 }
 
 .mode-card:hover h5 {
-    color: #f3de98;
+    color: #ffffff;
 }
 
 .mode-card:hover p {
@@ -288,7 +288,7 @@ main {
 
 .btn-secondary:hover {
     border-color: #c9a84c;
-    color: #f3de98;
+    color: #fff;
     background: rgba(201, 168, 76, 0.06);
 }
 
@@ -339,7 +339,7 @@ main {
     background: #8b6914;
     border: none;
     border-radius: 6px;
-    color: #f5e2a6;
+    color: #fff;
     font-weight: bold;
     font-size: 1em;
     cursor: pointer;
@@ -515,7 +515,7 @@ main {
 
 .step:hover .step-number {
     background: #8b6914;
-    color: #f5e2a6;
+    color: #fff;
 }
 
 .step h4 {
