@@ -11,67 +11,21 @@
     <a href="/" class="logo" id="logo">BinaryClash</a>
     <div class="nav-right">
         {% if user %}
-        <div class="profile-menu" id="profileMenu">
-            <div class="profile-trigger" onclick="toggleProfile()">
-                <div class="profile-avatar">
-                    {% if user.avatar %}
-                    <img src="{{ user.avatar }}" alt="{{ user.name }}">
-                    {% else %}
-                    <span>{{ user.name[0] }}</span>
-                    {% endif %}
-                </div>
-                <span class="profile-name">{{ user.name }}</span>
-                <svg class="profile-arrow" viewBox="0 0 24 24">
-                    <path d="M6 9l6 6 6-6"/>
-                </svg>
+        <a href="/settings" class="profile-pill">
+            <div class="profile-avatar">
+                {% if user.avatar %}
+                <img src="{{ user.avatar }}" alt="{{ user.user_name or user.name }}">
+                {% else %}
+                <span>{{ (user.user_name or user.name or 'U')[0] }}</span>
+                {% endif %}
             </div>
-            <div class="profile-dropdown" id="profileDropdown">
-                <div class="dropdown-header">
-                    <div class="dropdown-avatar">
-                        {% if user.avatar %}
-                        <img src="{{ user.avatar }}" alt="{{ user.name }}">
-                        {% else %}
-                        <span>{{ user.name[0] }}</span>
-                        {% endif %}
-                    </div>
-                    <div>
-                        <div class="dropdown-name">{{ user.name }}</div>
-                        <div class="dropdown-email">{{ user.email }}</div>
-                    </div>
-                </div>
-                <div class="dropdown-divider"></div>
-                <a href="/profile">
-                    <svg viewBox="0 0 24 24">
-                        <circle cx="12" cy="8" r="4"/>
-                        <path d="M4 20c0-4 4-7 8-7s8 3 8 7"/>
-                    </svg>
-                    Мой профиль
-                </a>
-                <a href="/settings">
-                    <svg viewBox="0 0 24 24">
-                        <circle cx="12" cy="12" r="3"/>
-                        <path d="M12 1v4M12 19v4M1 12h4M19 12h4"/>
-                    </svg>
-                    Настройки
-                </a>
-                <a href="/history">
-                    <svg viewBox="0 0 24 24">
-                        <circle cx="12" cy="12" r="10"/>
-                        <polyline points="12 6 12 12 16 14"/>
-                    </svg>
-                    История судов
-                </a>
-                <div class="dropdown-divider"></div>
-                <a href="/logout" class="logout-link">
-                    <svg viewBox="0 0 24 24">
-                        <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/>
-                    </svg>
-                    Выйти
-                </a>
-            </div>
-        </div>
+            <span class="profile-pill-name">{{ user.user_name or user.name }}</span>
+            <span class="profile-pill-text">Настройки профиля</span>
+        </a>
         {% else %}
-        <a href="/login" class="btn-login">Войти</a>
+        <div class="nav-auth-actions">
+            <a href="/register" class="btn-register">Регистрация</a>
+        </div>
         {% endif %}
     </div>
 </nav>
@@ -93,6 +47,18 @@
     <span>BinaryClash &copy; 2026</span>
 </footer>
 
+<div class="supreme-overlay" id="supremeOverlay">
+    <div class="supreme-overlay__content">
+        <span class="supreme-overlay__badge">СУД</span>
+        <h2>ВЕРХОВНЫЙ BinaryClash</h2>
+        <p>Порядок восстановлен</p>
+    </div>
+</div>
+
+<div class="chaos-overlay" id="chaosOverlay">
+    <div class="chaos-overlay__text" id="chaosText">СЛУЧАЙНОСТЬ ПРИШЛА</div>
+</div>
+
 <div class="particles" id="particles"></div>
 
 <audio id="doorSound" src="{{ url_for('static', filename='sfx/door.mp3') }}" preload="auto"></audio>
@@ -100,37 +66,47 @@
 <audio id="organSound" src="{{ url_for('static', filename='sfx/organ.mp3') }}" preload="auto"></audio>
 
 <script>
-    function toggleProfile() {
-        var dropdown = document.getElementById("profileDropdown");
-        var arrow = document.querySelector(".profile-arrow");
-        dropdown.classList.toggle("open");
-        arrow.classList.toggle("open");
-    }
-
-    document.addEventListener("click", function(e) {
-        var menu = document.getElementById("profileMenu");
-        if (menu && !menu.contains(e.target)) {
-            var dropdown = document.getElementById("profileDropdown");
-            var arrow = document.querySelector(".profile-arrow");
-            dropdown.classList.remove("open");
-            arrow.classList.remove("open");
-        }
-    });
-
     (function() {
         var container = document.getElementById("particles");
-        for (var i = 0; i < 30; i++) {
+        if (!container) return;
+        for (var i = 0; i < 60; i++) {
             var p = document.createElement("div");
             p.className = "particle";
             p.style.left = Math.random() * 100 + "%";
-            var size = Math.random() * 4 + 2;
+            p.style.top = Math.random() * 100 + "%";
+            var size = Math.random() * 3 + 2;
             p.style.width = size + "px";
-            p.style.height = size + "px";
-            p.style.animationDuration = (Math.random() * 10 + 8) + "s";
-            p.style.animationDelay = (Math.random() * 12) + "s";
+            p.style.height = (Math.random() * 18 + 8) + "px";
+            p.style.animationDuration = (Math.random() * 8 + 10) + "s";
+            p.style.animationDelay = (Math.random() * 8) + "s";
+            p.style.opacity = (0.25 + Math.random() * 0.65).toFixed(2);
+            p.style.filter = "hue-rotate(" + (Math.random() * 80 - 40) + "deg)";
             container.appendChild(p);
         }
     })();
+
+    function spawnSausages() {
+        var container = document.getElementById("particles");
+        if (!container || !document.body.classList.contains('chaos-mode')) return;
+        var count = Math.floor(Math.random() * 4) + 3;
+        for (var i = 0; i < count; i++) {
+            var s = document.createElement("div");
+            s.className = "sausage";
+            s.style.left = Math.random() * 100 + "%";
+            s.style.top = (-30 - Math.random() * 40) + "px";
+            s.style.width = (8 + Math.random() * 10) + "px";
+            s.style.height = (5 + Math.random() * 8) + "px";
+            s.style.animationDuration = (3.5 + Math.random() * 2.5) + "s";
+            s.style.animationDelay = (Math.random() * 1.2) + "s";
+            s.style.setProperty('--sausage-color', ['#f3c96b', '#ff5b5b', '#b788ff', '#7ce3ff', '#9bff7a'][Math.floor(Math.random() * 5)]);
+            s.addEventListener('animationend', function() {
+                if (this.parentNode) {
+                    this.parentNode.removeChild(this);
+                }
+            });
+            container.appendChild(s);
+        }
+    }
 
     (function() {
         var els = document.querySelectorAll(".feature, .welcome-right, .live-preview, .quote-section");
@@ -169,33 +145,159 @@
     // Пасхалка: Верховный суд
     (function() {
         var logo = document.getElementById("logo");
+        var overlay = document.getElementById("supremeOverlay");
+        var chaosOverlay = document.getElementById("chaosOverlay");
+        var chaosText = document.getElementById("chaosText");
         var count = 0;
         var timer = null;
+        var chaosTimer = null;
+        var textTimer = null;
+        var chaosActive = false;
 
-        logo.addEventListener("click", function(e) {
+        if (!logo) return;
+
+        function randomChaosPhrase() {
+            var phrases = [
+                'СЛУЧАЙНОСТЬ ПРИШЛА',
+                'ПРАВИЛА СМЕНЯЮТСЯ',
+                'СУД ПЕРЕПИСЫВАЕТСЯ',
+                'ХАОС ПРИСУТСТВУЕТ',
+                'НЕЧТО СЛУЧИЛОСЬ',
+                'ПРОЦЕСС НЕУПРАВЛЯЕМ',
+                'ТЕКСТ ПЛЫВЁТ',
+                'НИКТО НЕ ВЫШЕ ПРАВИЛ'
+            ];
+            return phrases[Math.floor(Math.random() * phrases.length)];
+        }
+
+        function scrambleWord(word) {
+            if (word.length <= 4) return word;
+            var chars = word.split('');
+            var first = chars.shift();
+            var last = chars.pop();
+            var middle = chars;
+            for (var i = middle.length - 1; i > 0; i--) {
+                if (Math.random() < 0.45) {
+                    var j = Math.floor(Math.random() * (i + 1));
+                    var tmp = middle[i];
+                    middle[i] = middle[j];
+                    middle[j] = tmp;
+                }
+            }
+            return first + middle.join('') + last;
+        }
+
+        function scrambleExcerpt(text) {
+            var words = text.split(/(\s+)/);
+            var usable = words.filter(function(part) {
+                return part.trim().length > 0;
+            });
+            if (usable.length <= 2) {
+                return text;
+            }
+            var start = Math.floor(Math.random() * Math.max(1, usable.length - 2));
+            var end = Math.min(usable.length, start + 1 + Math.floor(Math.random() * 3));
+            var result = [];
+            for (var i = 0; i < usable.length; i++) {
+                if (i >= start && i < end && usable[i].trim()) {
+                    result.push(scrambleWord(usable[i]));
+                } else {
+                    result.push(usable[i]);
+                }
+            }
+            return result.join('');
+        }
+
+        function applyTextChaos() {
+            var textNodes = document.querySelectorAll('h1, h2, h3, h4, h5, p, span, a, button, li, label, input, footer, .live-label, .debate-role, .debate-text, .quote-text, .section-title');
+            var nodes = Array.prototype.slice.call(textNodes).filter(function(el) {
+                var text = el.textContent.trim();
+                return text && !el.closest('.chaos-overlay') && !el.closest('.supreme-overlay') && el.offsetParent !== null;
+            });
+
+            nodes.forEach(function(el) {
+                if (!el.dataset.originalText) {
+                    el.dataset.originalText = el.textContent;
+                }
+
+                if (Math.random() < 0.48) {
+                    var scrambled = scrambleExcerpt(el.dataset.originalText);
+                    if (scrambled !== el.dataset.originalText) {
+                        el.dataset.isScrambled = 'true';
+                        el.classList.add('chaos-text-active');
+                        el.textContent = scrambled;
+                    }
+                } else if (el.dataset.originalText && Math.random() < 0.18) {
+                    el.textContent = el.dataset.originalText;
+                    el.classList.remove('chaos-text-active');
+                }
+            });
+        }
+
+        function startChaosMode() {
+            if (chaosActive) return;
+            chaosActive = true;
+            document.body.classList.add('supreme-court');
+            document.body.classList.add('chaos-mode');
+            document.title = 'ВЕРХОВНЫЙ BinaryClash';
+            logo.textContent = 'ВЕРХОВНЫЙ BinaryClash';
+
+            if (overlay) {
+                overlay.classList.remove('active');
+            }
+
+            if (chaosOverlay) {
+                chaosOverlay.classList.remove('active');
+            }
+
+            var particles = document.querySelectorAll('.particle');
+            particles.forEach(function(p, index) {
+                p.style.background = index % 2 === 0
+                    ? 'linear-gradient(to top, #fff7b8, #ffd54f)'
+                    : 'linear-gradient(to top, #9f73ff, #4b2c8c)';
+                p.style.boxShadow = index % 2 === 0
+                    ? '0 0 12px rgba(255, 213, 79, 0.65)'
+                    : '0 0 18px rgba(159, 115, 255, 0.5)';
+            });
+
+            var organ = document.getElementById('organSound');
+            if (organ) {
+                organ.volume = 0.5;
+                organ.play().catch(function() {});
+            }
+
+            spawnSausages();
+
+            if (chaosTimer) clearInterval(chaosTimer);
+            chaosTimer = setInterval(function() {
+                if (chaosOverlay && chaosText) {
+                    chaosText.textContent = randomChaosPhrase();
+                }
+                document.body.classList.toggle('chaos-flash');
+                applyTextChaos();
+                document.documentElement.style.setProperty('--chaos-shift-x', (Math.random() * 6 - 3) + 'px');
+                document.documentElement.style.setProperty('--chaos-shift-y', (Math.random() * 3.5 - 1.75) + 'px');
+                document.documentElement.style.setProperty('--chaos-rot', (Math.random() * 3 - 1.5) + 'deg');
+                spawnSausages();
+            }, 550);
+
+            if (textTimer) clearInterval(textTimer);
+            textTimer = setInterval(function() {
+                document.body.style.setProperty('--chaos-rotate', (Math.random() * 3 - 1.5) + 'deg');
+                document.body.style.setProperty('--chaos-scale', (0.98 + Math.random() * 0.03).toFixed(2));
+                document.body.style.setProperty('--chaos-skew', (Math.random() * 2 - 1) + 'deg');
+            }, 300);
+        }
+
+        logo.addEventListener('click', function(e) {
             e.preventDefault();
             count++;
             clearTimeout(timer);
             timer = setTimeout(function() { count = 0; }, 2000);
 
-            if (count >= 15) {
+            if (count >= 8) {
                 count = 0;
-                document.body.classList.add("supreme-court");
-                logo.textContent = "ВЕРХОВНЫЙ БОРАВКО";
-
-                var particles = document.querySelectorAll(".particle");
-                particles.forEach(function(p) {
-                    p.style.background = "#ffd700";
-                    p.style.boxShadow = "0 0 10px #ffd700";
-                    p.style.width = (Math.random() * 6 + 3) + "px";
-                    p.style.height = p.style.width;
-                });
-
-                var organ = document.getElementById("organSound");
-                if (organ) {
-                    organ.volume = 0.5;
-                    organ.play().catch(function() {});
-                }
+                startChaosMode();
             }
         });
     })();
