@@ -79,7 +79,7 @@ def test_model(model_id):
 
 
 if __name__ == "__main__":
-    print("BARAVKO — Проверка доступных ИИ-моделей (поиск всех бесплатных)")
+    print("BinaryClash — Проверка доступных ИИ-моделей (поиск всех бесплатных)")
     print("-" * 60)
 
     free_models = get_free_models()

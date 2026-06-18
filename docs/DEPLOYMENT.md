@@ -8,8 +8,8 @@
 ## Установка
 
 1. Клонируй репозиторий
-   git clone https://github.com/baravko/baravko.git
-   cd baravko
+   git clone https://github.com/binaryclash/binaryclash.git
+   cd binaryclash
 
 2. Создай виртуальное окружение
    python -m venv venv
