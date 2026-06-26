@@ -280,6 +280,31 @@ def upload_avatar():
     return redirect('/profile?status=saved')
 
 
+@app.route('/profile/username', methods=['POST'])
+@login_required
+def change_username():
+    new_name = request.form.get('user_name', '').strip()
+
+    if len(new_name) < 3 or len(new_name) > 24:
+        return redirect('/profile?status=name_len')
+
+    ses = db_session.create_session()
+    taken = ses.query(User).filter(
+        User.user_name == new_name,
+        User.id != session['user_id']
+    ).first()
+    if taken:
+        ses.close()
+        return redirect('/profile?status=name_taken')
+
+    user = ses.query(User).filter(User.id == session['user_id']).first()
+    user.user_name = new_name
+    ses.commit()
+    session['user_name'] = new_name
+    ses.close()
+    return redirect('/profile?status=name_saved')
+
+
 @app.route('/profile/avatar/delete', methods=['POST'])
 @login_required
 def delete_avatar():

@@ -30,7 +30,24 @@
                 </label>
             </form>
 
-            <h1 class="profile-username">{{ profile_user.user_name }}</h1>
+            <div class="profile-username-row" id="usernameView">
+                <h1 class="profile-username">{{ profile_user.user_name }}</h1>
+                <button type="button" class="profile-username-edit" title="Изменить никнейм" onclick="toggleUsernameEdit(true)">
+                    <i data-lucide="pencil"></i>
+                </button>
+            </div>
+            <form class="profile-username-form" id="usernameForm" action="/profile/username" method="post">
+                <input type="text" name="user_name" id="usernameInput"
+                       value="{{ profile_user.user_name }}" maxlength="24" minlength="3"
+                       autocomplete="off" required>
+                <button type="submit" class="profile-username-btn profile-username-btn--save" title="Сохранить">
+                    <i data-lucide="check"></i>
+                </button>
+                <button type="button" class="profile-username-btn profile-username-btn--cancel" title="Отмена" onclick="toggleUsernameEdit(false)">
+                    <i data-lucide="x"></i>
+                </button>
+            </form>
+
             <div class="profile-email-chip">
                 <i data-lucide="mail"></i>
                 {{ profile_user.email }}
@@ -44,6 +61,12 @@
             <div class="profile-toast profile-toast--err"><i data-lucide="alert-triangle"></i> Не удалось обработать файл</div>
             {% elif status == 'nofile' %}
             <div class="profile-toast profile-toast--err"><i data-lucide="alert-triangle"></i> Файл не выбран</div>
+            {% elif status == 'name_saved' %}
+            <div class="profile-toast profile-toast--ok"><i data-lucide="check-circle-2"></i> Никнейм изменён</div>
+            {% elif status == 'name_taken' %}
+            <div class="profile-toast profile-toast--err"><i data-lucide="alert-triangle"></i> Этот никнейм уже занят</div>
+            {% elif status == 'name_len' %}
+            <div class="profile-toast profile-toast--err"><i data-lucide="alert-triangle"></i> Никнейм должен быть от 3 до 24 символов</div>
             {% endif %}
 
             <div class="profile-avatar-actions">
@@ -143,5 +166,21 @@
             });
         }
     })();
+
+    function toggleUsernameEdit(editing) {
+        var view = document.getElementById('usernameView');
+        var form = document.getElementById('usernameForm');
+        var inp = document.getElementById('usernameInput');
+        if (editing) {
+            view.style.display = 'none';
+            form.classList.add('active');
+            inp.focus();
+            inp.select();
+        } else {
+            form.classList.remove('active');
+            view.style.display = '';
+            inp.value = inp.defaultValue;
+        }
+    }
 </script>
 {% endblock %}

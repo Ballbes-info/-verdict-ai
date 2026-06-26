@@ -10,10 +10,38 @@
 body {
     background: #141414;
     color: #d4c5a9;
-    font-family: 'Segoe UI', sans-serif;
+    font-family: 'Inter', 'Segoe UI', sans-serif;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+
+/* Премиальная типографика: Playfair Display для крупных заголовков (editorial/luxury) */
+.logo,
+.welcome-left h1,
+.modes-title,
+.section-title,
+.quote-text,
+.profile-username,
+.modes-hero h1,
+.verification-header h2,
+.welcome-right .auth-form h2 {
+    font-family: 'Playfair Display', Georgia, serif;
+}
+
+/* Засечному шрифту нужен воздух — снимаем зажатый трекинг крупных заголовков */
+.modes-title,
+.welcome-left h1 {
+    letter-spacing: 0.5px;
+}
+.quote-text {
+    font-style: italic;
+    letter-spacing: 0.3px;
+}
+.logo {
+    letter-spacing: 1px;
 }
 
 /* Навигация */
@@ -55,6 +83,27 @@ body {
     justify-content: center;
     align-items: center;
     padding: 40px 20px;
+    position: relative;
+    z-index: 1;
+}
+
+/* Золотой дождь на фоне welcome */
+.gold-rain {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+}
+
+/* Контент welcome поверх дождя */
+.live-preview,
+.features,
+.how-it-works,
+.quote-section {
+    position: relative;
+    z-index: 1;
 }
 
 /* ==========================================================================
@@ -1110,13 +1159,85 @@ body {
 .profile-avatar-overlay svg { width: 26px; height: 26px; stroke-width: 1.6; }
 .profile-avatar-big:hover .profile-avatar-overlay { opacity: 1; }
 
-.profile-username {
+.profile-username-row {
     margin-top: 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.profile-username {
     font-size: 1.7em;
     font-weight: 700;
     color: #ece0c4;
     letter-spacing: 0.3px;
 }
+
+.profile-username-edit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 9px;
+    background: #161210;
+    border: 1px solid #2a2018;
+    color: #8b7355;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.profile-username-edit:hover { border-color: #5a4230; color: #c9a84c; }
+.profile-username-edit svg { width: 15px; height: 15px; stroke-width: 1.8; }
+
+.profile-username-form {
+    margin-top: 18px;
+    display: none;
+    align-items: center;
+    gap: 8px;
+}
+.profile-username-form.active { display: flex; }
+
+.profile-username-form input {
+    width: 220px;
+    padding: 10px 14px;
+    background: #0d0b09;
+    border: 1px solid #3a2a18;
+    border-radius: 10px;
+    color: #ece0c4;
+    font-size: 1.05em;
+    font-weight: 600;
+    text-align: center;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.profile-username-form input:focus {
+    border-color: #c9a84c;
+    box-shadow: 0 0 0 2px rgba(201, 168, 76, 0.18);
+}
+
+.profile-username-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.2s ease;
+}
+.profile-username-btn svg { width: 17px; height: 17px; stroke-width: 2; }
+.profile-username-btn--save {
+    background: linear-gradient(135deg, #c9a84c, #8b6914);
+    color: #1a1208;
+}
+.profile-username-btn--save:hover { box-shadow: 0 6px 16px rgba(201, 168, 76, 0.25); }
+.profile-username-btn--cancel {
+    background: #161210;
+    border-color: #2a2018;
+    color: #8b7355;
+}
+.profile-username-btn--cancel:hover { border-color: #6a2828; color: #d07a7a; }
 
 .profile-email-chip {
     margin-top: 10px;
@@ -2006,4 +2127,168 @@ body.supreme-court .logo-icon svg {
 .resend-link:hover {
     color: #e5c366;
     text-decoration: underline;
+}
+
+/* ==========================================================================
+   КИНЕМАТОГРАФИЧНЫЙ СЛОЙ (по дизайн-скиллу: Modern Dark / Cinema)
+   Токены + ambient-анимации + микро-взаимодействия. Применяется поверх базы.
+   ========================================================================== */
+:root {
+    --gold: #c9a84c;
+    --gold-bright: #f0d080;
+    --gold-deep: #8b6914;
+    --gold-glow: rgba(201, 168, 76, 0.22);
+    --ink-deep: #0b0a08;
+    --hairline: rgba(201, 168, 76, 0.10);
+    --ease-cine: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ---- Ambient-фон: плавающие золотые блобы + лёгкое зерно ---- */
+.ambient-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
+.ambient-blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.5;
+    will-change: transform;
+    mix-blend-mode: screen;
+}
+.ambient-blob--1 {
+    width: 46vw; height: 46vw;
+    top: -12vw; left: -8vw;
+    background: radial-gradient(circle, rgba(201,168,76,0.35), transparent 70%);
+    animation: blobFloat1 26s var(--ease-cine) infinite alternate;
+}
+.ambient-blob--2 {
+    width: 38vw; height: 38vw;
+    bottom: -14vw; right: -6vw;
+    background: radial-gradient(circle, rgba(240,208,128,0.25), transparent 70%);
+    animation: blobFloat2 32s var(--ease-cine) infinite alternate;
+}
+.ambient-blob--3 {
+    width: 30vw; height: 30vw;
+    top: 38%; left: 52%;
+    background: radial-gradient(circle, rgba(139,105,20,0.30), transparent 70%);
+    animation: blobFloat3 38s var(--ease-cine) infinite alternate;
+}
+@keyframes blobFloat1 {
+    0%   { transform: translate(0,0) scale(1); }
+    100% { transform: translate(14vw, 10vh) scale(1.25); }
+}
+@keyframes blobFloat2 {
+    0%   { transform: translate(0,0) scale(1.1); }
+    100% { transform: translate(-12vw, -8vh) scale(0.85); }
+}
+@keyframes blobFloat3 {
+    0%   { transform: translate(-50%,-50%) scale(0.9); }
+    100% { transform: translate(-62%, -38%) scale(1.3); }
+}
+.ambient-grain {
+    position: absolute;
+    inset: -100%;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.45'/%3E%3C/svg%3E");
+    opacity: 0.025;
+    animation: grainShift 8s steps(6) infinite;
+}
+@keyframes grainShift {
+    0%{transform:translate(0,0)} 20%{transform:translate(-5%,5%)} 40%{transform:translate(5%,-5%)}
+    60%{transform:translate(-3%,-3%)} 80%{transform:translate(3%,3%)} 100%{transform:translate(0,0)}
+}
+
+/* контент должен быть выше фона */
+.navbar, main, footer { position: relative; z-index: 2; }
+
+/* ---- Глассморфизм-навбар ---- */
+.navbar {
+    background: rgba(17, 17, 17, 0.6) !important;
+    backdrop-filter: blur(16px) saturate(140%);
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
+    border-bottom: 1px solid var(--hairline);
+}
+
+/* ---- Логотип: золотой шиммер-проход ---- */
+.logo {
+    background: linear-gradient(100deg, var(--gold) 20%, #fff6d8 48%, var(--gold) 72%);
+    background-size: 220% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: goldShimmer 6s linear infinite;
+}
+@keyframes goldShimmer { to { background-position: 220% center; } }
+
+/* ---- Кнопки: scale-press + золотое свечение + блик ---- */
+.btn-primary, .btn-register, .btn-start, .profile-btn--primary,
+.welcome-right .auth-form button, .register-page .auth-form button {
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.25s var(--ease-cine), box-shadow 0.3s var(--ease-cine), filter 0.3s ease;
+}
+.btn-primary:hover, .btn-register:hover, .btn-start:hover, .profile-btn--primary:hover,
+.welcome-right .auth-form button:hover, .register-page .auth-form button:hover {
+    box-shadow: 0 10px 30px var(--gold-glow), 0 0 0 1px rgba(201,168,76,0.25);
+    filter: brightness(1.06);
+}
+.btn-primary:active, .btn-register:active, .btn-start:active, .profile-btn--primary:active,
+.welcome-right .auth-form button:active, .register-page .auth-form button:active {
+    transform: scale(0.97);
+}
+/* бегущий блик по кнопке */
+.btn-primary::after, .btn-register::after, .profile-btn--primary::after,
+.welcome-right .auth-form button::after {
+    content: '';
+    position: absolute;
+    top: 0; left: -120%;
+    width: 70%; height: 100%;
+    background: linear-gradient(100deg, transparent, rgba(255,255,255,0.35), transparent);
+    transform: skewX(-18deg);
+    transition: left 0.6s var(--ease-cine);
+    pointer-events: none;
+}
+.btn-primary:hover::after, .btn-register:hover::after, .profile-btn--primary:hover::after,
+.welcome-right .auth-form button:hover::after { left: 130%; }
+
+/* ---- Карты режимов: верхний «shine» + глубже подъём ---- */
+.mode-card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.22), transparent);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+    z-index: 3;
+}
+.mode-card:hover::after { opacity: 1; }
+
+/* ---- Появление контента: чистая CSS-анимация (всегда заканчивается видимой) ---- */
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(26px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+.mode-card, .feature, .step, .profile-card, .profile-info-item,
+.modes-hero, .live-preview, .quote-section, .contact-card {
+    animation: fadeUp 0.7s var(--ease-cine) both;
+}
+/* Каскад: каждый следующий элемент чуть позже */
+.mode-card:nth-child(2), .feature:nth-child(2), .profile-info-item:nth-child(2) { animation-delay: 0.08s; }
+.mode-card:nth-child(3), .feature:nth-child(3), .profile-info-item:nth-child(3) { animation-delay: 0.16s; }
+.mode-card:nth-child(4), .feature:nth-child(4), .profile-info-item:nth-child(4) { animation-delay: 0.24s; }
+.mode-card:nth-child(5), .feature:nth-child(5) { animation-delay: 0.32s; }
+.feature:nth-child(6) { animation-delay: 0.40s; }
+
+/* ---- Уважение к prefers-reduced-motion ---- */
+@media (prefers-reduced-motion: reduce) {
+    .ambient-blob, .ambient-grain, .logo { animation: none; }
+    .mode-card, .feature, .step, .profile-card, .profile-info-item,
+    .modes-hero, .live-preview, .quote-section, .contact-card {
+        animation: none;
+    }
 }

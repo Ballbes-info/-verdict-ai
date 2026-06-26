@@ -3,6 +3,7 @@
 {% block title %}BARAVKO — Суд Нейросетей{% endblock %}
 
 {% block content %}
+<canvas id="goldRain" class="gold-rain"></canvas>
 <div class="welcome">
     <div class="welcome-left">
         <div class="logo-icon">
@@ -18,10 +19,6 @@
         <h1>BARAVKO</h1>
         <p class="tagline">Суд нейросетей.<br>Вы задаёте тему — они вершат правосудие.</p>
         <p class="subtitle">Прокурор, Адвокат и Судья сойдутся в битве аргументов.<br>А вы можете вмешаться в любой момент.</p>
-        <a href="/court" class="btn-start">
-            <span>Начать без регистрации</span>
-            <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-        </a>
     </div>
     <div class="welcome-right">
         <div class="auth-form">
@@ -251,6 +248,93 @@ function goToLogin() {
     }
     next();
     setInterval(next, 4500);
+})();
+
+/* ===== Золотой дождь ===== */
+(function() {
+    var canvas = document.getElementById("goldRain");
+    if (!canvas) return;
+    var ctx = canvas.getContext("2d");
+    var w, h, dpr;
+    var particles = [];
+
+    var palette = ["#fff3c4", "#f5d56b", "#c9a84c", "#e8c25a", "#ffe9a8"];
+
+    function resize() {
+        dpr = window.devicePixelRatio || 1;
+        w = canvas.clientWidth;
+        h = canvas.clientHeight;
+        canvas.width = w * dpr;
+        canvas.height = h * dpr;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    function makeParticle(initial) {
+        var depth = Math.random();            // 0 — далеко, 1 — близко
+        return {
+            x: Math.random() * w,
+            y: initial ? Math.random() * h : -10 - Math.random() * 40,
+            r: 0.6 + depth * 1.8,             // радиус по глубине
+            speed: 12 + depth * 46,           // px/сек, ближние быстрее
+            drift: (Math.random() - 0.5) * 14,
+            sway: Math.random() * Math.PI * 2,
+            swaySpeed: 0.4 + Math.random() * 0.9,
+            color: palette[(Math.random() * palette.length) | 0],
+            baseAlpha: 0.25 + depth * 0.5,
+            twinkle: Math.random() * Math.PI * 2,
+            twinkleSpeed: 1.2 + Math.random() * 2.2,
+            depth: depth
+        };
+    }
+
+    function init() {
+        resize();
+        particles = [];
+        var count = Math.min(150, Math.floor(w * h / 9000));
+        for (var i = 0; i < count; i++) particles.push(makeParticle(true));
+    }
+
+    var last = performance.now();
+    function frame(now) {
+        var dt = Math.min((now - last) / 1000, 0.05);
+        last = now;
+        ctx.clearRect(0, 0, w, h);
+        ctx.globalCompositeOperation = "lighter";
+
+        for (var i = 0; i < particles.length; i++) {
+            var p = particles[i];
+            p.y += p.speed * dt;
+            p.sway += p.swaySpeed * dt;
+            p.twinkle += p.twinkleSpeed * dt;
+            var x = p.x + Math.sin(p.sway) * (4 + p.depth * 8) + p.drift * dt;
+
+            if (p.y > h + 12) {
+                particles[i] = makeParticle(false);
+                continue;
+            }
+
+            var alpha = p.baseAlpha * (0.55 + 0.45 * Math.sin(p.twinkle));
+            ctx.beginPath();
+            ctx.shadowBlur = 8 + p.depth * 12;
+            ctx.shadowColor = p.color;
+            ctx.fillStyle = p.color;
+            ctx.globalAlpha = alpha;
+            ctx.arc(x, p.y, p.r, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        ctx.globalAlpha = 1;
+        ctx.shadowBlur = 0;
+        requestAnimationFrame(frame);
+    }
+
+    init();
+    requestAnimationFrame(frame);
+
+    var resizeTimer;
+    window.addEventListener("resize", function() {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(init, 200);
+    });
 })();
 </script>
 {% endblock %}
