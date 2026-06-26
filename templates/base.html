@@ -10,17 +10,17 @@
 <nav class="navbar">
     <a href="/" class="logo" id="logo">BARAVKO</a>
     <div class="nav-right">
-        {% if user %}
+        {% if current_user %}
         <div class="profile-menu" id="profileMenu">
             <div class="profile-trigger" onclick="toggleProfile()">
                 <div class="profile-avatar">
-                    {% if user.avatar %}
-                    <img src="{{ user.avatar }}" alt="{{ user.name }}">
+                    {% if current_user.avatar %}
+                    <img src="{{ current_user.avatar }}" alt="{{ current_user.user_name }}">
                     {% else %}
-                    <span>{{ user.name[0] }}</span>
+                    <span>{{ current_user.user_name[0]|upper }}</span>
                     {% endif %}
                 </div>
-                <span class="profile-name">{{ user.name }}</span>
+                <span class="profile-name">{{ current_user.user_name }}</span>
                 <svg class="profile-arrow" viewBox="0 0 24 24">
                     <path d="M6 9l6 6 6-6"/>
                 </svg>
@@ -28,15 +28,15 @@
             <div class="profile-dropdown" id="profileDropdown">
                 <div class="dropdown-header">
                     <div class="dropdown-avatar">
-                        {% if user.avatar %}
-                        <img src="{{ user.avatar }}" alt="{{ user.name }}">
+                        {% if current_user.avatar %}
+                        <img src="{{ current_user.avatar }}" alt="{{ current_user.user_name }}">
                         {% else %}
-                        <span>{{ user.name[0] }}</span>
+                        <span>{{ current_user.user_name[0]|upper }}</span>
                         {% endif %}
                     </div>
                     <div>
-                        <div class="dropdown-name">{{ user.name }}</div>
-                        <div class="dropdown-email">{{ user.email }}</div>
+                        <div class="dropdown-name">{{ current_user.user_name }}</div>
+                        <div class="dropdown-email">{{ current_user.email }}</div>
                     </div>
                 </div>
                 <div class="dropdown-divider"></div>
@@ -47,19 +47,14 @@
                     </svg>
                     Мой профиль
                 </a>
-                <a href="/settings">
+                <a href="/select_mode">
                     <svg viewBox="0 0 24 24">
-                        <circle cx="12" cy="12" r="3"/>
-                        <path d="M12 1v4M12 19v4M1 12h4M19 12h4"/>
+                        <rect x="3" y="3" width="7" height="7" rx="1"/>
+                        <rect x="14" y="3" width="7" height="7" rx="1"/>
+                        <rect x="3" y="14" width="7" height="7" rx="1"/>
+                        <rect x="14" y="14" width="7" height="7" rx="1"/>
                     </svg>
-                    Настройки
-                </a>
-                <a href="/history">
-                    <svg viewBox="0 0 24 24">
-                        <circle cx="12" cy="12" r="10"/>
-                        <polyline points="12 6 12 12 16 14"/>
-                    </svg>
-                    История судов
+                    Режимы
                 </a>
                 <div class="dropdown-divider"></div>
                 <a href="/logout" class="logout-link">
@@ -70,8 +65,6 @@
                 </a>
             </div>
         </div>
-        {% else %}
-        <a href="/login" class="btn-login">Войти</a>
         {% endif %}
     </div>
 </nav>

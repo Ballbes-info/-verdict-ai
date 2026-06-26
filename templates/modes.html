@@ -1,30 +1,181 @@
 {% extends "base.html" %}
+{% block title %}Режимы — BARAVKO{% endblock %}
+
 {% block content %}
+<div class="modes-page">
 
-<div class="courtroom-grid">
-    <a href="#" class="mode-card">
-        <div class="mode-icon"><i data-lucide="gavel"></i></div>
-        <h5>Зал суда</h5>
-        <p>Нейросети в зале суда пытаются переспорить друг друга</p>
-    </a>
+    <div class="modes-hero">
+        <div class="modes-hero-eyebrow">
+            <span class="modes-hero-dot"></span>
+            5 режимов противостояния
+            <span class="modes-hero-dot"></span>
+        </div>
+        <h1 class="modes-title">Выберите<br><span class="modes-title-accent">арену</span></h1>
+        <p class="modes-subtitle">Нейросети готовы к бою. От академичного суда до абсолютного хаоса — каждый режим это отдельная вселенная.</p>
+    </div>
 
-    <a href="#" class="mode-card">
-        <div class="mode-icon"><i data-lucide="atom"></i></div>
-        <h5>Научная дискуссия</h5>
-        <p>Два ученых пытаются отстоять свою точку зрения!</p>
-    </a>
+    <div class="modes-grid">
 
-    <a href="#" class="mode-card">
-        <div class="mode-icon"><i data-lucide="messages-square"></i></div>
-        <h5>Спор на любую тему</h5>
-        <p>Нейросети спорят о чем пожелаете!</p>
-    </a>
+        <!-- 1. Классический суд -->
+        <a href="#" class="mode-card mc--classic">
+            <div class="mc__bg-glow"></div>
+            <div class="mc__number">01</div>
+            <div class="mc__top">
+                <div class="mc__icon">
+                    <i data-lucide="landmark"></i>
+                </div>
+                <div class="mc__badge mc__badge--gold">Базовый</div>
+            </div>
+            <div class="mc__content">
+                <h3 class="mc__title">Классический суд</h3>
+                <p class="mc__desc">Прокурор против Адвоката. Никаких вмешательств — только аргументы. Третья нейросеть следит за ходом спора и в нужный момент предлагает вынести вердикт.</p>
+            </div>
+            <div class="mc__footer">
+                <div class="mc__tags">
+                    <span>3 ИИ-модели</span>
+                    <span>Без вмешательств</span>
+                    <span>Судья-арбитр</span>
+                </div>
+                <div class="mc__arrow">
+                    <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </div>
+            </div>
+        </a>
 
-    <a href="#" class="mode-card">
-        <div class="mode-icon"><i data-lucide="bot"></i></div>
-        <h5>Нейронка против человека</h5>
-        <p>Докажите, что человек умнее нейросети</p>
-    </a>
+        <!-- 2. Суд с вмешательством -->
+        <a href="#" class="mode-card mc--interfere">
+            <div class="mc__bg-glow"></div>
+            <div class="mc__number">02</div>
+            <div class="mc__top">
+                <div class="mc__icon">
+                    <i data-lucide="wand-2"></i>
+                </div>
+                <div class="mc__badge mc__badge--blue">Интерактив</div>
+            </div>
+            <div class="mc__content">
+                <h3 class="mc__title">Суд с вмешательством</h3>
+                <p class="mc__desc">После каждой реплики — ваш ход. Вбросьте улику, смените свидетеля, поменяйте обстоятельства. Третья нейросеть отслеживает баланс и сигнализирует, когда чаши весов склонились.</p>
+            </div>
+            <div class="mc__footer">
+                <div class="mc__tags">
+                    <span>Ваши события</span>
+                    <span>После каждой реплики</span>
+                    <span>Судья-арбитр</span>
+                </div>
+                <div class="mc__arrow">
+                    <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </div>
+            </div>
+        </a>
+
+        <!-- 3. Суд с игроком в роли -->
+        <a href="#" class="mode-card mc--player">
+            <div class="mc__bg-glow"></div>
+            <div class="mc__number">03</div>
+            <div class="mc__top">
+                <div class="mc__icon">
+                    <i data-lucide="swords"></i>
+                </div>
+                <div class="mc__badge mc__badge--purple">Ролевой</div>
+            </div>
+            <div class="mc__content">
+                <h3 class="mc__title">Игрок в роли</h3>
+                <p class="mc__desc">Займите место Прокурора или Адвоката и вступите в прямую схватку с ИИ-оппонентом. Судью играет нейросеть — она же анализирует каждый аргумент и выносит финальный вердикт.</p>
+            </div>
+            <div class="mc__footer">
+                <div class="mc__tags">
+                    <span>Вы — участник</span>
+                    <span>Прокурор или Адвокат</span>
+                    <span>Судья-ИИ</span>
+                </div>
+                <div class="mc__arrow">
+                    <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </div>
+            </div>
+        </a>
+
+        <!-- 4. ИИ-дебаты -->
+        <a href="#" class="mode-card mc--debate">
+            <div class="mc__bg-glow"></div>
+            <div class="mc__number">04</div>
+            <div class="mc__top">
+                <div class="mc__icon">
+                    <i data-lucide="circuit-board"></i>
+                </div>
+                <div class="mc__badge mc__badge--cyan">Наблюдение</div>
+            </div>
+            <div class="mc__content">
+                <h3 class="mc__title">ИИ-дебаты</h3>
+                <p class="mc__desc">Два ИИ сходятся в открытой дискуссии без судебных ролей. Третья нейросеть взвешивает аргументы и подскажет, когда победитель определился. Вы наблюдаете и принимаете финальное решение.</p>
+            </div>
+            <div class="mc__footer">
+                <div class="mc__tags">
+                    <span>2 модели + арбитр</span>
+                    <span>Свободная тема</span>
+                    <span>Вы — судья</span>
+                </div>
+                <div class="mc__arrow">
+                    <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </div>
+            </div>
+        </a>
+
+        <!-- 5. Хаос-суд — полная ширина -->
+        <a href="#" class="mode-card mc--chaos">
+            <div class="mc__bg-glow"></div>
+            <div class="mc__chaos-bg">
+                <div class="mc__chaos-line"></div>
+                <div class="mc__chaos-line"></div>
+                <div class="mc__chaos-line"></div>
+            </div>
+            <div class="mc__number">05</div>
+            <div class="mc__chaos-inner">
+                <div class="mc__chaos-left">
+                    <div class="mc__top">
+                        <div class="mc__icon">
+                            <i data-lucide="tornado"></i>
+                        </div>
+                        <div class="mc__badge mc__badge--red">Хаос</div>
+                    </div>
+                    <div class="mc__content">
+                        <h3 class="mc__title">Хаос-суд</h3>
+                        <p class="mc__desc">Каждые 4 реплики — случайное событие, которое меняет всё. Третья нейросеть следит за происходящим и определяет победителя сквозь весь этот хаос. Логика есть, предсказуемости — нет.</p>
+                    </div>
+                </div>
+                <div class="mc__chaos-right">
+                    <div class="mc__chaos-events">
+                        <div class="mc__chaos-event">
+                            <span class="mc__chaos-icon"><i data-lucide="refresh-ccw"></i></span>
+                            <span>Свидетель внезапно меняет показания</span>
+                        </div>
+                        <div class="mc__chaos-event">
+                            <span class="mc__chaos-icon"><i data-lucide="shuffle"></i></span>
+                            <span>Прокурор и Адвокат меняются ролями</span>
+                        </div>
+                        <div class="mc__chaos-event">
+                            <span class="mc__chaos-icon"><i data-lucide="file-search-2"></i></span>
+                            <span>В деле обнаружены новые доказательства</span>
+                        </div>
+                        <div class="mc__chaos-event">
+                            <span class="mc__chaos-icon"><i data-lucide="shield-off"></i></span>
+                            <span>Судья временно теряет полномочия</span>
+                        </div>
+                    </div>
+                    <div class="mc__footer" style="margin-top: auto;">
+                        <div class="mc__tags">
+                            <span>3 ИИ-модели</span>
+                            <span>События каждые 4 реплики</span>
+                            <span>Судья-арбитр</span>
+                        </div>
+                        <div class="mc__arrow">
+                            <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </a>
+
+    </div>
+
 </div>
-
 {% endblock %}

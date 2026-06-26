@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+{% block title %}Профиль — BARAVKO{% endblock %}
+
+{% block content %}
+<div class="profile-page">
+
+    <div class="profile-card">
+
+        <!-- Декоративный баннер -->
+        <div class="profile-banner">
+            <div class="profile-banner-glow"></div>
+            <div class="profile-banner-grid"></div>
+        </div>
+
+        <!-- Аватар + загрузка -->
+        <div class="profile-identity">
+            <form id="avatarForm" action="/profile/avatar" method="post" enctype="multipart/form-data">
+                <label class="profile-avatar-big" title="Сменить аватар">
+                    {% if profile_user.avatar %}
+                    <img id="avatarPreview" src="{{ profile_user.avatar }}" alt="{{ profile_user.user_name }}">
+                    {% else %}
+                    <span id="avatarLetter">{{ profile_user.user_name[0]|upper }}</span>
+                    <img id="avatarPreview" src="" alt="" style="display:none;">
+                    {% endif %}
+                    <div class="profile-avatar-overlay">
+                        <i data-lucide="camera"></i>
+                        <span>Изменить</span>
+                    </div>
+                    <input type="file" name="avatar" id="avatarInput" accept="image/*" hidden>
+                </label>
+            </form>
+
+            <h1 class="profile-username">{{ profile_user.user_name }}</h1>
+            <div class="profile-email-chip">
+                <i data-lucide="mail"></i>
+                {{ profile_user.email }}
+            </div>
+
+            {% if status == 'saved' %}
+            <div class="profile-toast profile-toast--ok"><i data-lucide="check-circle-2"></i> Аватар обновлён</div>
+            {% elif status == 'removed' %}
+            <div class="profile-toast profile-toast--ok"><i data-lucide="check-circle-2"></i> Аватар удалён</div>
+            {% elif status == 'badimage' %}
+            <div class="profile-toast profile-toast--err"><i data-lucide="alert-triangle"></i> Не удалось обработать файл</div>
+            {% elif status == 'nofile' %}
+            <div class="profile-toast profile-toast--err"><i data-lucide="alert-triangle"></i> Файл не выбран</div>
+            {% endif %}
+
+            <div class="profile-avatar-actions">
+                <button type="button" class="profile-btn profile-btn--primary" onclick="document.getElementById('avatarInput').click()">
+                    <i data-lucide="upload"></i> Загрузить фото
+                </button>
+                {% if profile_user.avatar %}
+                <form action="/profile/avatar/delete" method="post" style="display:inline;">
+                    <button type="submit" class="profile-btn profile-btn--ghost">
+                        <i data-lucide="trash-2"></i> Удалить
+                    </button>
+                </form>
+                {% endif %}
+            </div>
+            <p class="profile-avatar-hint">JPG, PNG, WEBP или GIF · до 5 МБ · авто-обрезка в квадрат</p>
+        </div>
+
+        <!-- Информационные блоки -->
+        <div class="profile-info-grid">
+
+            <div class="profile-info-item">
+                <div class="profile-info-icon"><i data-lucide="user-round"></i></div>
+                <div class="profile-info-body">
+                    <span class="profile-info-label">Никнейм</span>
+                    <span class="profile-info-value">{{ profile_user.user_name }}</span>
+                </div>
+            </div>
+
+            <div class="profile-info-item">
+                <div class="profile-info-icon"><i data-lucide="at-sign"></i></div>
+                <div class="profile-info-body">
+                    <span class="profile-info-label">Почта</span>
+                    <span class="profile-info-value">{{ profile_user.email }}</span>
+                </div>
+            </div>
+
+            <div class="profile-info-item">
+                <div class="profile-info-icon">
+                    {% if via_google %}<i data-lucide="globe"></i>{% else %}<i data-lucide="key-round"></i>{% endif %}
+                </div>
+                <div class="profile-info-body">
+                    <span class="profile-info-label">Способ входа</span>
+                    <span class="profile-info-value">
+                        {% if via_google %}Google-аккаунт{% else %}Email и пароль{% endif %}
+                    </span>
+                </div>
+            </div>
+
+            <div class="profile-info-item">
+                <div class="profile-info-icon"><i data-lucide="hash"></i></div>
+                <div class="profile-info-body">
+                    <span class="profile-info-label">ID игрока</span>
+                    <span class="profile-info-value">#{{ '%06d'|format(profile_user.id) }}</span>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Статус-бейджи -->
+        <div class="profile-badges">
+            {% if via_google %}
+            <span class="profile-status-badge profile-status-badge--google">
+                <i data-lucide="badge-check"></i> Verified через Google
+            </span>
+            {% endif %}
+            {% if has_password %}
+            <span class="profile-status-badge profile-status-badge--secure">
+                <i data-lucide="shield-check"></i> Защищён паролем
+            </span>
+            {% endif %}
+            <span class="profile-status-badge profile-status-badge--member">
+                <i data-lucide="gavel"></i> Участник суда
+            </span>
+        </div>
+
+        <div class="profile-footer-actions">
+            <a href="/select_mode" class="profile-btn profile-btn--primary profile-btn--wide">
+                <i data-lucide="swords"></i> К аренам
+            </a>
+            <a href="/logout" class="profile-btn profile-btn--danger profile-btn--wide">
+                <i data-lucide="log-out"></i> Выйти из аккаунта
+            </a>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    (function() {
+        var input = document.getElementById('avatarInput');
+        var form = document.getElementById('avatarForm');
+        if (input && form) {
+            input.addEventListener('change', function() {
+                if (input.files && input.files[0]) {
+                    form.submit();
+                }
+            });
+        }
+    })();
+</script>
+{% endblock %}
