@@ -149,7 +149,7 @@ def register():
         try:
             msg = EmailMessage()
             msg.set_content(f"Код подтверждения: {code}")
-            msg["Subject"] = f"Код подтверждения BARAVKO: {code}"
+            msg["Subject"] = f"Код подтверждения BinaryClash: {code}"
             msg["From"] = gmail_user
             msg["To"] = email
             with smtplib.SMTP("smtp.gmail.com", 587) as server:
