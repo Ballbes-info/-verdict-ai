@@ -3,13 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}BARAVKO{% endblock %}</title>
+    <title>{% block title %}BinaryClash{% endblock %}</title>
+    <script>
+        // Применяем тему ДО отрисовки, чтобы не было мигания
+        (function() {
+            try {
+                var t = localStorage.getItem('theme') || 'dark';
+                document.documentElement.setAttribute('data-theme', t);
+            } catch (e) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
+        })();
+    </script>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
 <nav class="navbar">
-    <a href="/" class="logo" id="logo">BARAVKO</a>
+    <a href="/" class="logo" id="logo">BinaryClash</a>
     <div class="nav-right">
+        <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Сменить тему" aria-label="Сменить тему">
+            <svg class="theme-icon theme-icon--sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="4"/>
+                <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+            </svg>
+            <svg class="theme-icon theme-icon--moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+            </svg>
+        </button>
         {% if current_user %}
         <div class="profile-menu" id="profileMenu">
             <div class="profile-trigger" onclick="toggleProfile()">
@@ -83,7 +103,7 @@
     <a href="/about">О нас</a>
     <a href="https://github.com">GitHub</a>
     <a href="/contact">Контакты</a>
-    <span>BARAVKO &copy; 2026</span>
+    <span>BinaryClash &copy; 2026</span>
 </footer>
 
 <div class="particles" id="particles"></div>
@@ -93,6 +113,13 @@
 <audio id="organSound" src="{{ url_for('static', filename='sfx/organ.mp3') }}" preload="auto"></audio>
 
 <script>
+    function toggleTheme() {
+        var cur = document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+        var next = cur === 'light' ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', next);
+        try { localStorage.setItem('theme', next); } catch (e) {}
+    }
+
     function toggleProfile() {
         var dropdown = document.getElementById("profileDropdown");
         var arrow = document.querySelector(".profile-arrow");
