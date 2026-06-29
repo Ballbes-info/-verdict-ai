@@ -4,6 +4,37 @@
 
 {% block content %}
 <canvas id="goldRain" class="gold-rain"></canvas>
+
+<!-- ТОСТЫ ДЛЯ ОШИБОК ВХОДА -->
+{% if login_error %}
+<div class="toast-container">
+    <div class="toast-message">
+        <div class="toast-icon">
+            <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+        </div>
+        <div class="toast-content">
+            <div class="toast-title">Ошибка входа</div>
+            <div class="toast-text">Неверный email или пароль</div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- ТОСТЫ ДЛЯ УСПЕШНОГО ВОССТАНОВЛЕНИЯ ПАРОЛЯ -->
+{% if reset_success %}
+<div class="toast-container">
+    <div class="toast-message toast-success">
+        <div class="toast-icon">
+            <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+        </div>
+        <div class="toast-content">
+            <div class="toast-title">Пароль изменён</div>
+            <div class="toast-text">Теперь вы можете войти с новым паролем</div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
 <div class="welcome">
     <div class="welcome-left">
         <div class="logo-icon">
@@ -26,6 +57,9 @@
             <form method="post" id="auth_form">
                 <input type="email" name="email" id="welcomeEmail" placeholder="Email">
                 <input type="password" name="password" id="welcomePassword" placeholder="Пароль">
+                <a href="/reset_password" style="display: block; text-align: right; color: #8a7f6e; font-size: 12px; margin-top: 4px; margin-bottom: 12px; text-decoration: none; font-family: 'Times New Roman', serif; letter-spacing: 0.5px;">
+                    Забыли пароль?
+                </a>
                 <button class="btn-primary" type="submit">Войти</button>
             </form>
             <button class="btn-outline" onclick="location.href='/register'">Регистрация</button>
@@ -158,6 +192,14 @@
 </div>
 
 <script>
+// Автоматическое скрытие тостов
+document.querySelectorAll('.toast-message').forEach(toast => {
+    setTimeout(() => {
+        toast.classList.add('fade-out');
+        toast.addEventListener('animationend', () => toast.remove());
+    }, 4000);
+});
+
 function goToLogin() {
     var email = document.getElementById("welcomeEmail").value;
     var password = document.getElementById("welcomePassword").value;
@@ -250,7 +292,7 @@ function goToLogin() {
     setInterval(next, 4500);
 })();
 
-/* ===== Золотой дождь (оптимизированный: спрайты свечения, без shadowBlur) ===== */
+/* ===== Золотой дождь ===== */
 (function() {
     var canvas = document.getElementById("goldRain");
     if (!canvas) return;
@@ -261,7 +303,6 @@ function goToLogin() {
     var particles = [];
     var palette = ["#fff3c4", "#f5d56b", "#c9a84c", "#e8c25a", "#ffe9a8"];
 
-    // Заранее рендерим спрайт свечения для каждого цвета — рисуем потом через drawImage (быстро)
     var SPRITE = 24;
     var sprites = palette.map(function(color) {
         var c = document.createElement("canvas");
@@ -279,7 +320,7 @@ function goToLogin() {
     });
 
     function resize() {
-        dpr = Math.min(window.devicePixelRatio || 1, 1.5); // не плодим лишние пиксели на retina
+        dpr = Math.min(window.devicePixelRatio || 1, 1.5);
         w = canvas.clientWidth;
         h = canvas.clientHeight;
         canvas.width = Math.round(w * dpr);
@@ -307,7 +348,6 @@ function goToLogin() {
     function init() {
         resize();
         particles = [];
-        // заметно меньше частиц + жёсткий потолок
         var count = Math.min(70, Math.floor(w * h / 22000));
         for (var i = 0; i < count; i++) particles.push(makeParticle(true));
     }
@@ -341,7 +381,6 @@ function goToLogin() {
     init();
     requestAnimationFrame(frame);
 
-    // Пауза анимации, когда вкладка не активна — не жрём CPU в фоне
     document.addEventListener("visibilitychange", function() {
         if (document.hidden) { running = false; }
         else if (!running) { running = true; last = 0; requestAnimationFrame(frame); }
