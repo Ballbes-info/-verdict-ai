@@ -48,6 +48,12 @@
                 </button>
             </form>
 
+            <!-- НОВАЯ КНОПКА ГЕНЕРАЦИИ НИКНЕЙМА -->
+            <button type="button" class="btn-generate" id="generateNicknameBtn">
+                🎲 Сгенерировать никнейм
+            </button>
+            <div id="generatedNickname"></div>
+
             <div class="profile-email-chip">
                 <i data-lucide="mail"></i>
                 {{ profile_user.email }}
@@ -67,6 +73,8 @@
             <div class="profile-toast profile-toast--err"><i data-lucide="alert-triangle"></i> Этот никнейм уже занят</div>
             {% elif status == 'name_len' %}
             <div class="profile-toast profile-toast--err"><i data-lucide="alert-triangle"></i> Никнейм должен быть от 3 до 24 символов</div>
+            {% elif status == 'avatar_saved' %}
+            <div class="profile-toast profile-toast--ok"><i data-lucide="check-circle-2"></i> Аватар из библиотеки установлен</div>
             {% endif %}
 
             <div class="profile-avatar-actions">
@@ -80,6 +88,10 @@
                     </button>
                 </form>
                 {% endif %}
+                <!-- НОВАЯ КНОПКА БИБЛИОТЕКИ -->
+                <button type="button" class="btn-library" id="openAvatarLibrary">
+                    📚 Библиотека
+                </button>
             </div>
             <p class="profile-avatar-hint">JPG, PNG, WEBP или GIF · до 5 МБ · авто-обрезка в квадрат</p>
         </div>
@@ -154,6 +166,22 @@
     </div>
 </div>
 
+<!-- МОДАЛЬНОЕ ОКНО БИБЛИОТЕКИ АВАТАРОВ -->
+<div class="avatar-modal" id="avatarModal">
+    <div class="avatar-modal-content">
+        <div class="avatar-modal-header">
+            <h2>📚 Библиотека аватаров</h2>
+            <button class="avatar-modal-close" id="closeModal">&times;</button>
+        </div>
+        <div class="avatar-modal-body" id="avatarGrid">
+            <p class="avatar-empty-message">
+                <span>⏳</span>
+                Загрузка...
+            </p>
+        </div>
+    </div>
+</div>
+
 <script>
     (function() {
         var input = document.getElementById('avatarInput');
@@ -181,6 +209,163 @@
             view.style.display = '';
             inp.value = inp.defaultValue;
         }
+    }
+
+    // ====== ГЕНЕРАЦИЯ НИКНЕЙМА ======
+    document.getElementById('generateNicknameBtn')?.addEventListener('click', function() {
+        var btn = this;
+        var display = document.getElementById('generatedNickname');
+        var input = document.getElementById('usernameInput');
+
+        btn.textContent = '⏳ Генерация...';
+        btn.disabled = true;
+
+        fetch('/generate_nickname', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.nickname) {
+                display.textContent = '🎲 ' + data.nickname;
+                display.style.display = 'block';
+                display.classList.add('show');
+                if (input) {
+                    input.value = data.nickname;
+                }
+                // Автоматически открываем редактирование
+                if (!document.getElementById('usernameForm').classList.contains('active')) {
+                    toggleUsernameEdit(true);
+                }
+            }
+        })
+        .catch(() => {
+            showToast('Ошибка генерации никнейма', 'error');
+        })
+        .finally(() => {
+            btn.textContent = '🎲 Сгенерировать никнейм';
+            btn.disabled = false;
+        });
+    });
+
+    // ====== БИБЛИОТЕКА АВАТАРОВ ======
+    var modal = document.getElementById('avatarModal');
+    var grid = document.getElementById('avatarGrid');
+    var closeBtn = document.getElementById('closeModal');
+
+    document.getElementById('openAvatarLibrary')?.addEventListener('click', function() {
+        modal.classList.add('open');
+        grid.innerHTML = '<p class="avatar-empty-message"><span>⏳</span>Загрузка...</p>';
+
+        fetch('/get_avatars')
+            .then(response => response.json())
+            .then(data => {
+                if (data.avatars && data.avatars.length > 0) {
+                    grid.innerHTML = '';
+                    data.avatars.forEach(function(path) {
+                        var div = document.createElement('div');
+                        div.className = 'avatar-item';
+                        div.innerHTML = `
+                            <img src="${path}" alt="Avatar" loading="lazy">
+                            <div class="avatar-check">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            </div>
+                        `;
+                        div.addEventListener('click', function() {
+                            selectAvatar(path);
+                        });
+                        grid.appendChild(div);
+                    });
+                } else {
+                    grid.innerHTML = `
+                        <p class="avatar-empty-message">
+                            <span>📂</span>
+                            В библиотеке пока нет аватаров.<br>
+                            Добавьте фото в папку <code style="color:#c9a84c;">static/avatars/</code>
+                        </p>
+                    `;
+                }
+            })
+            .catch(function() {
+                grid.innerHTML = '<p class="avatar-empty-message"><span>❌</span>Ошибка загрузки библиотеки</p>';
+            });
+    });
+
+    function selectAvatar(path) {
+        if (!confirm('Установить этот аватар?')) return;
+
+        fetch('/profile/avatar/library', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: 'avatar_path=' + encodeURIComponent(path)
+        })
+        .then(function() {
+            modal.classList.remove('open');
+            window.location.href = '/profile?status=avatar_saved';
+        })
+        .catch(function() {
+            showToast('Ошибка установки аватара', 'error');
+        });
+    }
+
+    // Закрытие модалки
+    closeBtn.onclick = function() {
+        modal.classList.remove('open');
+    };
+
+    modal.addEventListener('click', function(event) {
+        if (event.target === modal) {
+            modal.classList.remove('open');
+        }
+    });
+
+    // Закрытие по Escape
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && modal.classList.contains('open')) {
+            modal.classList.remove('open');
+        }
+    });
+
+    // ====== ТОСТЫ ======
+    function showToast(message, type) {
+        var existing = document.querySelector('.toast-container');
+        if (existing) existing.remove();
+
+        var container = document.createElement('div');
+        container.className = 'toast-container';
+        var toast = document.createElement('div');
+        toast.className = 'toast-message' + (type === 'success' ? ' toast-success' : '');
+
+        var icon = document.createElement('div');
+        icon.className = 'toast-icon';
+        if (type === 'success') {
+            icon.innerHTML = '<svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>';
+        } else {
+            icon.innerHTML = '<svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>';
+        }
+
+        var content = document.createElement('div');
+        content.className = 'toast-content';
+        var title = document.createElement('div');
+        title.className = 'toast-title';
+        title.textContent = type === 'success' ? 'Успешно' : 'Ошибка';
+        var text = document.createElement('div');
+        text.className = 'toast-text';
+        text.textContent = message;
+
+        content.appendChild(title);
+        content.appendChild(text);
+        toast.appendChild(icon);
+        toast.appendChild(content);
+        container.appendChild(toast);
+        document.body.prepend(container);
+
+        setTimeout(function() {
+            toast.classList.add('fade-out');
+            toast.addEventListener('animationend', function() {
+                toast.remove();
+            });
+        }, 3000);
     }
 </script>
 {% endblock %}

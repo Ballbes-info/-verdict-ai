@@ -537,5 +537,81 @@ def select_mode():
     return render_template('modes.html')
 
 
+@app.route('/generate_nickname', methods=['POST'])
+@login_required
+def generate_nickname():
+    with open("nicknames.json", mode='r', encoding='utf-8') as f:
+        nicknames_data = json.load(f)
+
+    ses = db_session.create_session()
+    while True:
+        nick_name = f'{random.choice(nicknames_data)}{random.randint(1, 1000000000)}'
+        if not ses.query(User).filter(User.user_name == nick_name).first():
+            break
+
+    ses.close()
+    return {'nickname': nick_name}
+
+
+AVATAR_FOLDER = os.path.join('static', 'avatars')
+
+
+@app.route('/get_avatars')
+@login_required
+def get_avatars():
+    """Возвращает список доступных аватаров из папки"""
+    avatars = []
+    if os.path.exists(AVATAR_FOLDER):
+        for filename in os.listdir(AVATAR_FOLDER):
+            if filename.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.webp')):
+                avatars.append(f'/static/avatars/{filename}')
+    return {'avatars': avatars}
+
+
+@app.route('/profile/avatar/library', methods=['POST'])
+@login_required
+def set_avatar_from_library():
+    """Устанавливает аватар из библиотеки"""
+    avatar_path = request.form.get('avatar_path')
+    if not avatar_path or not avatar_path.startswith('/static/avatars/'):
+        return redirect('/profile?status=badavatar')
+
+    ses = db_session.create_session()
+    user = ses.query(User).filter(User.id == session['user_id']).first()
+
+    if user:
+        # Загружаем картинку и конвертируем в data-uri
+        try:
+            full_path = os.path.join('.', avatar_path.lstrip('/'))
+            if os.path.exists(full_path):
+                from PIL import Image
+                import io
+                import base64
+
+                img = Image.open(full_path)
+                img = img.convert('RGB')
+
+                # Делаем квадратным
+                width, height = img.size
+                side = min(width, height)
+                left = (width - side) // 2
+                top = (height - side) // 2
+                img = img.crop((left, top, left + side, top + side))
+                img = img.resize((256, 256), Image.LANCZOS)
+
+                buffer = io.BytesIO()
+                img.save(buffer, format='JPEG', quality=85)
+                encoded = base64.b64encode(buffer.getvalue()).decode('ascii')
+                data_uri = f'data:image/jpeg;base64,{encoded}'
+
+                user.avatar = data_uri
+                ses.commit()
+        except Exception as e:
+            app.logger.error(f"Ошибка установки аватара из библиотеки: {e}")
+
+    ses.close()
+    return redirect('/profile?status=avatar_saved')
+
+
 if __name__ == "__main__":
     app.run(debug=True)

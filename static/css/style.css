@@ -2254,3 +2254,255 @@ body.supreme-court .logo-icon svg {
 /* Светлая тема: опасная кнопка (выход) */
 [data-theme="light"] .profile-btn--danger { background: #fbeaea; border-color: #e8c4c4; color: #b04444; }
 [data-theme="light"] .profile-btn--danger:hover { background: #f7dede; border-color: #d89a9a; color: #c0392b; }
+
+
+/* ==========================================================================
+   ГЕНЕРАЦИЯ НИКНЕЙМА И БИБЛИОТЕКА АВАТАРОВ
+   ========================================================================== */
+
+/* Кнопка генерации никнейма */
+.btn-generate {
+    background: #1a1410;
+    color: #c9a84c;
+    border: 1px solid #3a2a18;
+    padding: 8px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.85em;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-generate:hover {
+    background: #c9a84c;
+    color: #1a1208;
+    border-color: #c9a84c;
+    box-shadow: 0 0 20px rgba(201, 168, 76, 0.2);
+}
+
+#generatedNickname {
+    margin-top: 10px;
+    padding: 10px 14px;
+    background: #0d0b09;
+    border: 1px solid #3a2a18;
+    border-radius: 8px;
+    color: #e8c25a;
+    font-size: 1em;
+    font-weight: 600;
+    display: none;
+    text-align: center;
+    letter-spacing: 0.5px;
+}
+
+#generatedNickname.show {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
+
+/* Кнопка библиотеки аватаров */
+.btn-library {
+    background: #1a1410;
+    color: #6fa8dc;
+    border: 1px solid #14304a;
+    padding: 8px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.85em;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-library:hover {
+    background: #6fa8dc;
+    color: #1a1208;
+    border-color: #6fa8dc;
+    box-shadow: 0 0 20px rgba(111, 168, 220, 0.2);
+}
+
+/* Модальное окно библиотеки аватаров */
+.avatar-modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.3s ease;
+}
+
+.avatar-modal.open {
+    display: flex;
+}
+
+.avatar-modal-content {
+    background: #1a1410;
+    border: 1px solid #3a2a18;
+    border-radius: 20px;
+    max-width: 700px;
+    width: 90%;
+    max-height: 80vh;
+    overflow: hidden;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8);
+    animation: toastIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.avatar-modal-header {
+    padding: 20px 28px;
+    border-bottom: 1px solid #2a2018;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.avatar-modal-header h2 {
+    color: #e8c25a;
+    font-size: 1.2em;
+    letter-spacing: 1px;
+    margin: 0;
+}
+
+.avatar-modal-close {
+    color: #8a7a60;
+    font-size: 28px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    line-height: 1;
+    background: none;
+    border: none;
+}
+
+.avatar-modal-close:hover {
+    color: #fff;
+    transform: rotate(90deg);
+}
+
+.avatar-modal-body {
+    padding: 24px 28px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 16px;
+    max-height: 55vh;
+    overflow-y: auto;
+}
+
+.avatar-modal-body::-webkit-scrollbar {
+    width: 6px;
+}
+.avatar-modal-body::-webkit-scrollbar-track {
+    background: #0d0b09;
+    border-radius: 10px;
+}
+.avatar-modal-body::-webkit-scrollbar-thumb {
+    background: #3a2a18;
+    border-radius: 10px;
+}
+.avatar-modal-body::-webkit-scrollbar-thumb:hover {
+    background: #5a4230;
+}
+
+.avatar-item {
+    cursor: pointer;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+    aspect-ratio: 1/1;
+    background: #0d0b09;
+    position: relative;
+}
+
+.avatar-item:hover {
+    border-color: #c9a84c;
+    transform: scale(1.05);
+    box-shadow: 0 0 30px rgba(201, 168, 76, 0.2);
+}
+
+.avatar-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.avatar-item .avatar-check {
+    position: absolute;
+    bottom: 6px;
+    right: 6px;
+    background: #c9a84c;
+    color: #1a1208;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.avatar-item:hover .avatar-check {
+    opacity: 1;
+}
+
+.avatar-empty-message {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: #8a7a60;
+    padding: 40px 20px;
+    font-size: 0.95em;
+}
+
+.avatar-empty-message span {
+    display: block;
+    font-size: 48px;
+    margin-bottom: 16px;
+}
+
+/* Светлая тема для модалки */
+[data-theme="light"] .avatar-modal-content {
+    background: #fffdf7;
+    border-color: #e3d8c0;
+}
+
+[data-theme="light"] .avatar-modal-header {
+    border-bottom-color: #e3d8c0;
+}
+
+[data-theme="light"] .avatar-modal-header h2 {
+    color: #2b2418;
+}
+
+[data-theme="light"] .avatar-modal-close {
+    color: #8a7a60;
+}
+
+[data-theme="light"] .avatar-modal-close:hover {
+    color: #2b2418;
+}
+
+[data-theme="light"] .avatar-item {
+    background: #f6f0e2;
+}
+
+[data-theme="light"] .avatar-modal-body::-webkit-scrollbar-track {
+    background: #f6f0e2;
+}
+[data-theme="light"] .avatar-modal-body::-webkit-scrollbar-thumb {
+    background: #ddd0b4;
+}
+[data-theme="light"] .avatar-modal-body::-webkit-scrollbar-thumb:hover {
+    background: #c9a84c;
+}
+
+[data-theme="light"] .avatar-empty-message {
+    color: #7a6d54;
+}
