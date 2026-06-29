@@ -1,10 +1,10 @@
 ╔══════════════════════════════════════════════════════════╗
 ║     РЕЗУЛЬТАТЫ ТЕСТИРОВАНИЯ AI API                     ║
-║     2026-06-27 21:50:08                    ║
+║     2026-06-29 14:39:48                    ║
 ╚══════════════════════════════════════════════════════════╝
 
-СЕРВИСОВ: 6/8 работает
-МОДЕЛЕЙ: 26 доступно
+СЕРВИСОВ: 8/8 работает
+МОДЕЛЕЙ: 38 доступно
 
 ============================================================
 РЕЙТИНГ МОДЕЛЕЙ:
@@ -26,7 +26,23 @@
     Токены:    💲 Средняя
     Русский:   ✅ Хорошо
 
- 3. gpt-oss-120b
+ 3. NVIDIA: Nemotron 3 Ultra (free)
+    Сервис:    OpenRouter
+    Ключ:      OPENROUTER_API_KEY
+    Сила:      ⭐⭐⭐⭐⭐
+    Скорость:  🕐 Средне
+    Токены:    💰 Затратная
+    Русский:   ⚠️ Средне
+
+ 4. NVIDIA: Nemotron 3 Super (free)
+    Сервис:    OpenRouter
+    Ключ:      OPENROUTER_API_KEY
+    Сила:      ⭐⭐⭐⭐⭐
+    Скорость:  🕐 Средне
+    Токены:    💰 Затратная
+    Русский:   ⚠️ Средне
+
+ 5. gpt-oss-120b
     Сервис:    Cerebras
     Ключ:      CEREBRAS_API_KEY
     Сила:      ⭐⭐⭐⭐⭐
@@ -34,7 +50,7 @@
     Токены:    💰 Затратная
     Русский:   ✅ Хорошо
 
- 4. gpt-4o
+ 6. gpt-4o
     Сервис:    GitHub
     Ключ:      GITHUB_API_KEY
     Сила:      ⭐⭐⭐⭐⭐
@@ -42,7 +58,7 @@
     Токены:    💲 Средняя
     Русский:   ✅ Хорошо
 
- 5. gpt-4o-mini
+ 7. gpt-4o-mini
     Сервис:    GitHub
     Ключ:      GITHUB_API_KEY
     Сила:      ⭐⭐⭐⭐⭐
@@ -50,7 +66,7 @@
     Токены:    🆓 Экономная
     Русский:   ✅ Хорошо
 
- 6. mistral-large-latest
+ 8. mistral-large-latest
     Сервис:    Mistral
     Ключ:      MISTRAL_API_KEY
     Сила:      ⭐⭐⭐⭐⭐
@@ -58,7 +74,15 @@
     Токены:    💰 Затратная
     Русский:   ✅ Хорошо
 
- 7. meta-llama/llama-4-scout-17b-16e-instruct
+ 9. qwen/qwen3-32b
+    Сервис:    Groq
+    Ключ:      GROQ_API_KEY
+    Сила:      ⭐⭐⭐⭐
+    Скорость:  ⚡ Мгновенно
+    Токены:    💲 Средняя
+    Русский:   ✅ Хорошо
+
+10. meta-llama/llama-4-scout-17b-16e-instruct
     Сервис:    Groq
     Ключ:      GROQ_API_KEY
     Сила:      ⭐⭐⭐⭐
@@ -66,15 +90,7 @@
     Токены:    💲 Средняя
     Русский:   ⚠️ Средне
 
- 8. qwen/qwen3-32b
-    Сервис:    Groq
-    Ключ:      GROQ_API_KEY
-    Сила:      ⭐⭐⭐⭐
-    Скорость:  ⚡ Мгновенно
-    Токены:    💲 Средняя
-    Русский:   ✅ Хорошо
-
- 9. mistral-medium-latest
+11. mistral-medium-latest
     Сервис:    Mistral
     Ключ:      MISTRAL_API_KEY
     Сила:      ⭐⭐⭐⭐
@@ -82,7 +98,7 @@
     Токены:    💲 Средняя
     Русский:   ✅ Хорошо
 
-10. @cf/deepseek-ai/deepseek-r1-distill-qwen-32b
+12. @cf/deepseek-ai/deepseek-r1-distill-qwen-32b
     Сервис:    Cloudflare
     Ключ:      CLOUDFLARE_API_KEY
     Сила:      ⭐⭐⭐⭐
@@ -90,7 +106,7 @@
     Токены:    💲 Средняя
     Русский:   ✅ Хорошо
 
-11. GigaChat (Сбер)
+13. GigaChat (Сбер)
     Сервис:    GigaChat
     Ключ:      GIGACHAT_AUTH_KEY
     Сила:      ⭐⭐⭐
@@ -98,39 +114,15 @@
     Токены:    💲 Средняя
     Русский:   ✅ Родной
 
-12. meta-llama/llama-prompt-guard-2-86m
-    Сервис:    Groq
-    Ключ:      GROQ_API_KEY
+14. gemini-2.5-flash
+    Сервис:    Gemini
+    Ключ:      GEMINI_API_KEY
     Сила:      ⭐⭐⭐
-    Скорость:  ⚡ Мгновенно
-    Токены:    💲 Средняя
-    Русский:   ⚠️ Средне
-
-13. meta-llama/llama-prompt-guard-2-22m
-    Сервис:    Groq
-    Ключ:      GROQ_API_KEY
-    Сила:      ⭐⭐⭐
-    Скорость:  ⚡ Мгновенно
-    Токены:    💲 Средняя
-    Русский:   ⚠️ Средне
-
-14. allam-2-7b
-    Сервис:    Groq
-    Ключ:      GROQ_API_KEY
-    Сила:      ⭐⭐⭐
-    Скорость:  ⚡ Мгновенно
-    Токены:    💲 Средняя
-    Русский:   ⚠️ Средне
-
-15. openai/gpt-oss-20b
-    Сервис:    Groq
-    Ключ:      GROQ_API_KEY
-    Сила:      ⭐⭐⭐
-    Скорость:  ⚡ Мгновенно
-    Токены:    💲 Средняя
+    Скорость:  🕐 Средне
+    Токены:    🆓 Экономная
     Русский:   ✅ Хорошо
 
-16. groq/compound
+15. groq/compound-mini
     Сервис:    Groq
     Ключ:      GROQ_API_KEY
     Сила:      ⭐⭐⭐
@@ -138,15 +130,31 @@
     Токены:    💰 Затратная
     Русский:   ⚠️ Средне
 
-17. openai/gpt-oss-safeguard-20b
+16. meta-llama/llama-prompt-guard-2-86m
     Сервис:    Groq
     Ключ:      GROQ_API_KEY
     Сила:      ⭐⭐⭐
     Скорость:  ⚡ Мгновенно
     Токены:    💲 Средняя
-    Русский:   ✅ Хорошо
+    Русский:   ⚠️ Средне
 
-18. groq/compound-mini
+17. allam-2-7b
+    Сервис:    Groq
+    Ключ:      GROQ_API_KEY
+    Сила:      ⭐⭐⭐
+    Скорость:  ⚡ Мгновенно
+    Токены:    💲 Средняя
+    Русский:   ⚠️ Средне
+
+18. llama-3.1-8b-instant
+    Сервис:    Groq
+    Ключ:      GROQ_API_KEY
+    Сила:      ⭐⭐⭐
+    Скорость:  ⚡ Мгновенно
+    Токены:    🆓 Экономная
+    Русский:   ⚠️ Средне
+
+19. groq/compound
     Сервис:    Groq
     Ключ:      GROQ_API_KEY
     Сила:      ⭐⭐⭐
@@ -154,7 +162,7 @@
     Токены:    💰 Затратная
     Русский:   ⚠️ Средне
 
-19. qwen/qwen3.6-27b
+20. openai/gpt-oss-20b
     Сервис:    Groq
     Ключ:      GROQ_API_KEY
     Сила:      ⭐⭐⭐
@@ -162,15 +170,103 @@
     Токены:    💲 Средняя
     Русский:   ✅ Хорошо
 
-20. llama-3.1-8b-instant
+21. qwen/qwen3.6-27b
     Сервис:    Groq
     Ключ:      GROQ_API_KEY
     Сила:      ⭐⭐⭐
     Скорость:  ⚡ Мгновенно
+    Токены:    💲 Средняя
+    Русский:   ✅ Хорошо
+
+22. meta-llama/llama-prompt-guard-2-22m
+    Сервис:    Groq
+    Ключ:      GROQ_API_KEY
+    Сила:      ⭐⭐⭐
+    Скорость:  ⚡ Мгновенно
+    Токены:    💲 Средняя
+    Русский:   ⚠️ Средне
+
+23. openai/gpt-oss-safeguard-20b
+    Сервис:    Groq
+    Ключ:      GROQ_API_KEY
+    Сила:      ⭐⭐⭐
+    Скорость:  ⚡ Мгновенно
+    Токены:    💲 Средняя
+    Русский:   ✅ Хорошо
+
+24. Cohere: North Mini Code (free)
+    Сервис:    OpenRouter
+    Ключ:      OPENROUTER_API_KEY
+    Сила:      ⭐⭐⭐
+    Скорость:  🕐 Средне
     Токены:    🆓 Экономная
     Русский:   ⚠️ Средне
 
-21. mistral-small-latest
+25. NVIDIA: Nemotron 3.5 Content Safety (free)
+    Сервис:    OpenRouter
+    Ключ:      OPENROUTER_API_KEY
+    Сила:      ⭐⭐⭐
+    Скорость:  🕐 Средне
+    Токены:    💲 Средняя
+    Русский:   ⚠️ Средне
+
+26. Owl Alpha
+    Сервис:    OpenRouter
+    Ключ:      OPENROUTER_API_KEY
+    Сила:      ⭐⭐⭐
+    Скорость:  🕐 Средне
+    Токены:    💲 Средняя
+    Русский:   ⚠️ Средне
+
+27. NVIDIA: Nemotron 3 Nano Omni (free)
+    Сервис:    OpenRouter
+    Ключ:      OPENROUTER_API_KEY
+    Сила:      ⭐⭐⭐
+    Скорость:  🕐 Средне
+    Токены:    💲 Средняя
+    Русский:   ⚠️ Средне
+
+28. Poolside: Laguna XS.2 (free)
+    Сервис:    OpenRouter
+    Ключ:      OPENROUTER_API_KEY
+    Сила:      ⭐⭐⭐
+    Скорость:  🕐 Средне
+    Токены:    💲 Средняя
+    Русский:   ⚠️ Средне
+
+29. Google: Gemma 4 31B (free)
+    Сервис:    OpenRouter
+    Ключ:      OPENROUTER_API_KEY
+    Сила:      ⭐⭐⭐
+    Скорость:  🕐 Средне
+    Токены:    💲 Средняя
+    Русский:   ⚠️ Средне
+
+30. LiquidAI: LFM2.5-1.2B-Instruct (free)
+    Сервис:    OpenRouter
+    Ключ:      OPENROUTER_API_KEY
+    Сила:      ⭐⭐⭐
+    Скорость:  🕐 Средне
+    Токены:    💲 Средняя
+    Русский:   ⚠️ Средне
+
+31. NVIDIA: Nemotron 3 Nano 30B A3B (free)
+    Сервис:    OpenRouter
+    Ключ:      OPENROUTER_API_KEY
+    Сила:      ⭐⭐⭐
+    Скорость:  🕐 Средне
+    Токены:    🆓 Экономная
+    Русский:   ⚠️ Средне
+
+32. NVIDIA: Nemotron Nano 12B 2 VL (free)
+    Сервис:    OpenRouter
+    Ключ:      OPENROUTER_API_KEY
+    Сила:      ⭐⭐⭐
+    Скорость:  🕐 Средне
+    Токены:    💲 Средняя
+    Русский:   ⚠️ Средне
+
+33. mistral-small-latest
     Сервис:    Mistral
     Ключ:      MISTRAL_API_KEY
     Сила:      ⭐⭐⭐
@@ -178,7 +274,7 @@
     Токены:    🆓 Экономная
     Русский:   ✅ Хорошо
 
-22. open-mistral-nemo
+34. open-mistral-nemo
     Сервис:    Mistral
     Ключ:      MISTRAL_API_KEY
     Сила:      ⭐⭐⭐
@@ -186,7 +282,7 @@
     Токены:    💲 Средняя
     Русский:   ✅ Хорошо
 
-23. ministral-8b-latest
+35. ministral-8b-latest
     Сервис:    Mistral
     Ключ:      MISTRAL_API_KEY
     Сила:      ⭐⭐⭐
@@ -194,7 +290,7 @@
     Токены:    🆓 Экономная
     Русский:   ⚠️ Средне
 
-24. ministral-3b-latest
+36. ministral-3b-latest
     Сервис:    Mistral
     Ключ:      MISTRAL_API_KEY
     Сила:      ⭐⭐⭐
@@ -202,7 +298,7 @@
     Токены:    🆓 Экономная
     Русский:   ⚠️ Средне
 
-25. @cf/meta/llama-3.1-8b-instruct
+37. @cf/meta/llama-3.1-8b-instruct
     Сервис:    Cloudflare
     Ключ:      CLOUDFLARE_API_KEY
     Сила:      ⭐⭐⭐
@@ -210,7 +306,7 @@
     Токены:    🆓 Экономная
     Русский:   ⚠️ Средне
 
-26. @cf/google/gemma-2b-it-lora
+38. @cf/google/gemma-2b-it-lora
     Сервис:    Cloudflare
     Ключ:      CLOUDFLARE_API_KEY
     Сила:      ⭐⭐⭐
@@ -222,9 +318,11 @@
 КАТЕГОРИИ:
 ============================================================
 
-🏆 САМЫЕ СИЛЬНЫЕ (6):
+🏆 САМЫЕ СИЛЬНЫЕ (8):
    • openai/gpt-oss-120b ← GROQ_API_KEY
    • llama-3.3-70b-versatile ← GROQ_API_KEY
+   • NVIDIA: Nemotron 3 Ultra (free) ← OPENROUTER_API_KEY
+   • NVIDIA: Nemotron 3 Super (free) ← OPENROUTER_API_KEY
    • gpt-oss-120b ← CEREBRAS_API_KEY
    • gpt-4o ← GITHUB_API_KEY
    • gpt-4o-mini ← GITHUB_API_KEY
@@ -233,27 +331,30 @@
 ⚡ САМЫЕ БЫСТРЫЕ (13):
    • openai/gpt-oss-120b ← GROQ_API_KEY
    • llama-3.3-70b-versatile ← GROQ_API_KEY
-   • meta-llama/llama-4-scout-17b-16e-instruct ← GROQ_API_KEY
    • qwen/qwen3-32b ← GROQ_API_KEY
-   • meta-llama/llama-prompt-guard-2-86m ← GROQ_API_KEY
-   • meta-llama/llama-prompt-guard-2-22m ← GROQ_API_KEY
-   • allam-2-7b ← GROQ_API_KEY
-   • openai/gpt-oss-20b ← GROQ_API_KEY
-   • groq/compound ← GROQ_API_KEY
-   • openai/gpt-oss-safeguard-20b ← GROQ_API_KEY
+   • meta-llama/llama-4-scout-17b-16e-instruct ← GROQ_API_KEY
    • groq/compound-mini ← GROQ_API_KEY
+   • meta-llama/llama-prompt-guard-2-86m ← GROQ_API_KEY
+   • allam-2-7b ← GROQ_API_KEY
+   • llama-3.1-8b-instant ← GROQ_API_KEY
+   • groq/compound ← GROQ_API_KEY
+   • openai/gpt-oss-20b ← GROQ_API_KEY
    • qwen/qwen3.6-27b ← GROQ_API_KEY
-   • llama-3.1-8b-instant ← GROQ_API_KEY
+   • meta-llama/llama-prompt-guard-2-22m ← GROQ_API_KEY
+   • openai/gpt-oss-safeguard-20b ← GROQ_API_KEY
 
-🆓 ЭКОНОМНЫЕ (6):
+🆓 ЭКОНОМНЫЕ (9):
    • gpt-4o-mini ← GITHUB_API_KEY
+   • gemini-2.5-flash ← GEMINI_API_KEY
    • llama-3.1-8b-instant ← GROQ_API_KEY
+   • Cohere: North Mini Code (free) ← OPENROUTER_API_KEY
+   • NVIDIA: Nemotron 3 Nano 30B A3B (free) ← OPENROUTER_API_KEY
    • mistral-small-latest ← MISTRAL_API_KEY
    • ministral-8b-latest ← MISTRAL_API_KEY
    • ministral-3b-latest ← MISTRAL_API_KEY
    • @cf/meta/llama-3.1-8b-instruct ← CLOUDFLARE_API_KEY
 
-🌍 ЛУЧШИЕ ДЛЯ РУССКОГО (15):
+🌍 ЛУЧШИЕ ДЛЯ РУССКОГО (16):
    • openai/gpt-oss-120b ← GROQ_API_KEY
    • llama-3.3-70b-versatile ← GROQ_API_KEY
    • gpt-oss-120b ← CEREBRAS_API_KEY
@@ -276,4 +377,4 @@
 
 ⚠️ Все лимиты общие на сервис, не на модель!
 
-Последняя проверка: 2026-06-27 21:50:08
+Последняя проверка: 2026-06-29 14:39:48
