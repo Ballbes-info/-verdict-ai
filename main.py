@@ -10,18 +10,17 @@ import smtplib
 import os
 import io
 import base64
-import ssl
 from email.message import EmailMessage
 from authlib.integrations.flask_client import OAuth
 from PIL import Image
 from dotenv import load_dotenv
-from datetime import datetime, timedelta
 
 load_dotenv()
 
+
 app = Flask(__name__)
-app.secret_key = os.getenv('SECRET_KEY', 'dev-secret-change-me')
-app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024
+app.secret_key = os.getenv('SECRET_KEY', 'dev-secret-cgggggggg   dsfasfasdfasdfasdfasdfsdfsfsdfsdfasdfdfasdfsdfsdfsdfshange-me')
+app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024  # 5 МБ на загрузку
 
 oauth = OAuth(app)
 google = oauth.register(
@@ -35,13 +34,13 @@ google = oauth.register(
 db_session.global_init('db/blogs.db')
 
 
+
 def login_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         if 'user_id' not in session:
             return redirect('/')
         return f(*args, **kwargs)
-
     return decorated
 
 
@@ -52,6 +51,8 @@ def set_user_session(user):
 
 
 def process_avatar(file_storage):
+    """Открывает загруженный файл, делает квадратный кроп по центру,
+    сжимает до 256x256 и возвращает data-URI для хранения в БД."""
     img = Image.open(file_storage.stream)
     img = img.convert('RGB')
 
@@ -66,41 +67,6 @@ def process_avatar(file_storage):
     img.save(buffer, format='JPEG', quality=85)
     encoded = base64.b64encode(buffer.getvalue()).decode('ascii')
     return f'data:image/jpeg;base64,{encoded}'
-
-
-def send_email(to_email, subject, body):
-    smtp_server = os.getenv('GMAIL_SERVER', 'smtp.gmail.com')
-    smtp_port = int(os.getenv('GMAIL_PORT', 465))
-    smtp_username = os.getenv('GMAIL_USERNAME')
-    smtp_password = os.getenv('GMAIL_PASSWORD')
-
-    if not smtp_username or not smtp_password:
-        app.logger.error("GMAIL_USERNAME / GMAIL_PASSWORD не заданы")
-        return False
-
-    try:
-        msg = EmailMessage()
-        msg["Subject"] = subject
-        msg["From"] = smtp_username
-        msg["To"] = to_email
-        msg.set_content(body)
-
-        context = ssl.create_default_context()
-
-        if smtp_port == 465:
-            with smtplib.SMTP_SSL(smtp_server, smtp_port, context=context) as server:
-                server.login(smtp_username, smtp_password)
-                server.send_message(msg)
-        else:
-            with smtplib.SMTP(smtp_server, smtp_port) as server:
-                server.starttls(context=context)
-                server.login(smtp_username, smtp_password)
-                server.send_message(msg)
-
-        return True
-    except Exception as e:
-        app.logger.error(f"Ошибка отправки письма: {e}")
-        return False
 
 
 @app.context_processor
@@ -132,8 +98,7 @@ def welcome():
 
         return render_template("welcome.html", login_error=True)
 
-    reset_success = request.args.get('reset_success', False)
-    return render_template("welcome.html", reset_success=reset_success)
+    return render_template("welcome.html")
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -165,70 +130,53 @@ def register():
         ses.close()
 
         if user:
-            return render_template('register.html', error="Этот email уже зарегистрирован", email_in=1, passw_error=0,
-                                   step=1)
+            return render_template('register.html', error=None, email_in=1, passw_error=0, step=1)
 
         passs = request.form.get('pass')
         rep_pass = request.form.get('repid_pass')
         if passs != rep_pass:
-            return render_template('register.html', error="Пароли не совпадают", email_in=0, passw_error=1, step=1)
+            return render_template('register.html', error=None, email_in=0, passw_error=1, step=1)
 
-        if len(passs) < 6:
-            return render_template('register.html', error="Пароль должен быть не менее 6 символов", email_in=0,
-                                   passw_error=1, step=1)
+        gmail_user = os.getenv('GMAIL_USER')
+        gmail_password = os.getenv('GMAIL_PASSWORD')
+        if not gmail_user or not gmail_password:
+            app.logger.error("GMAIL_USER / GMAIL_PASSWORD не заданы — письмо не отправлено")
+            return render_template('register.html', error=None, email_in=0,
+                                   passw_error=0, mail_error=1, step=1)
 
         code = ''.join(str(secrets.randbelow(10)) for _ in range(6))
 
-        subject = "Код подтверждения BinaryClash"
-        body = f"Ваш код подтверждения: {code}"
-
-        if not send_email(email, subject, body):
-            return render_template('register.html', error="Не удалось отправить письмо", email_in=0,
+        try:
+            msg = EmailMessage()
+            msg.set_content(f"Код подтверждения: {code}")
+            msg["Subject"] = f"Код подтверждения BinaryClash: {code}"
+            msg["From"] = gmail_user
+            msg["To"] = email
+            with smtplib.SMTP("smtp.gmail.com", 587) as server:
+                server.starttls()
+                server.login(gmail_user, gmail_password)
+                server.send_message(msg)
+        except Exception as e:
+            app.logger.error(f"Не удалось отправить письмо на {email}: {e}")
+            return render_template('register.html', error=None, email_in=0,
                                    passw_error=0, mail_error=1, step=1)
 
         session['reg_code'] = generate_password_hash(code)
         session['reg_email'] = email
         session['reg_password'] = generate_password_hash(passs)
-        session['reg_code_time'] = datetime.now().timestamp()
-        session['reg_last_sent'] = datetime.now().timestamp()
 
-        return render_template('register.html', step=2, email=email)
+        return render_template('register.html', step=2)
 
     else:
         input_code = request.form.get('full_code')
         real_code = session.get('reg_code')
-
-        if not real_code:
-            return render_template('register.html', step=2, code_error=True, error="Сессия истекла")
-
-        code_time = session.get('reg_code_time', 0)
-        if datetime.now().timestamp() - code_time > 600:
-            session.pop('reg_code', None)
-            session.pop('reg_email', None)
-            session.pop('reg_password', None)
-            session.pop('reg_code_time', None)
-            session.pop('reg_last_sent', None)
-            return render_template('register.html', step=1, error="Время подтверждения истекло")
-
-        if not check_password_hash(real_code, input_code):
+        if not real_code or not check_password_hash(real_code, input_code):
             return render_template('register.html', step=2, code_error=True)
-
-        ses = db_session.create_session()
-        email = session.get('reg_email')
-        existing_user = ses.query(User).filter(User.email == email).first()
-
-        if existing_user:
-            ses.close()
-            session.pop('reg_code', None)
-            session.pop('reg_email', None)
-            session.pop('reg_password', None)
-            session.pop('reg_code_time', None)
-            session.pop('reg_last_sent', None)
-            return render_template('register.html', step=1, error="Этот email уже зарегистрирован")
 
         with open("nicknames.json", mode='r', encoding='utf-8') as f:
             nicknames_data = json.load(f)
 
+        ses = db_session.create_session()
         while True:
             nick_name = f'{random.choice(nicknames_data)}{random.randint(1, 1000000000)}'
             if not ses.query(User).filter(User.user_name == nick_name).first():
@@ -246,154 +194,9 @@ def register():
         session.pop('reg_code', None)
         session.pop('reg_email', None)
         session.pop('reg_password', None)
-        session.pop('reg_code_time', None)
-        session.pop('reg_last_sent', None)
 
         ses.close()
         return redirect('/select_mode')
-
-
-@app.route("/resend_code", methods=["POST"])
-def resend_code():
-    """Повторная отправка кода подтверждения"""
-    email = session.get('reg_email')
-    if not email:
-        return {'error': 'Сессия истекла'}, 400
-
-    last_sent = session.get('reg_last_sent', 0)
-    if datetime.now().timestamp() - last_sent < 120:
-        remaining = 120 - int(datetime.now().timestamp() - last_sent)
-        return {'error': f'Подождите {remaining} секунд перед повторной отправкой'}, 429
-
-    code = ''.join(str(secrets.randbelow(10)) for _ in range(6))
-    session['reg_code'] = generate_password_hash(code)
-    session['reg_code_time'] = datetime.now().timestamp()
-    session['reg_last_sent'] = datetime.now().timestamp()
-
-    subject = "Код подтверждения BinaryClash"
-    body = f"Ваш код подтверждения: {code}"
-
-    if send_email(email, subject, body):
-        return {'success': True}
-    else:
-        return {'error': 'Не удалось отправить письмо'}, 500
-
-
-@app.route("/reset_password", methods=["GET", "POST"])
-def reset_password():
-    if 'user_id' in session:
-        return redirect('/select_mode')
-
-    if request.method == "GET":
-        return render_template('reset_password.html', step=1)
-
-    step = request.form.get('action')
-
-    if step == 'request':
-        email = request.form.get('email', '').strip()
-
-        ses = db_session.create_session()
-        user = ses.query(User).filter(User.email == email).first()
-        ses.close()
-
-        if not user:
-            return render_template('reset_password.html', step=1, error="Пользователь с таким email не найден")
-
-        code = ''.join(str(secrets.randbelow(10)) for _ in range(6))
-
-        subject = "Восстановление пароля BinaryClash"
-        body = f"Ваш код для восстановления пароля: {code}"
-
-        if not send_email(email, subject, body):
-            return render_template('reset_password.html', step=1,
-                                   error="Не удалось отправить письмо. Попробуйте позже.")
-
-        session['reset_code'] = generate_password_hash(code)
-        session['reset_email'] = email
-        session['reset_code_time'] = datetime.now().timestamp()
-        session['reset_last_sent'] = datetime.now().timestamp()
-
-        return render_template('reset_password.html', step=2, email=email)
-
-    elif step == 'verify':
-        input_code = request.form.get('full_code')
-        real_code = session.get('reset_code')
-        email = session.get('reset_email')
-
-        if not real_code:
-            return render_template('reset_password.html', step=1,
-                                   error="Сессия истекла. Начните восстановление заново.")
-
-        code_time = session.get('reset_code_time', 0)
-        if datetime.now().timestamp() - code_time > 600:
-            session.pop('reset_code', None)
-            session.pop('reset_email', None)
-            session.pop('reset_code_time', None)
-            session.pop('reset_last_sent', None)
-            return render_template('reset_password.html', step=1, error="Время истекло. Начните восстановление заново.")
-
-        if not check_password_hash(real_code, input_code):
-            return render_template('reset_password.html', step=2, code_error=True, email=email)
-
-        return render_template('reset_password.html', step=3, email=email)
-
-    else:
-        password = request.form.get('password')
-        confirm = request.form.get('confirm_password')
-
-        if password != confirm:
-            return render_template('reset_password.html', step=3, error="Пароли не совпадают")
-
-        if len(password) < 6:
-            return render_template('reset_password.html', step=3, error="Пароль должен быть не менее 6 символов")
-
-        email = session.get('reset_email')
-        if not email:
-            return redirect('/')
-
-        ses = db_session.create_session()
-        user = ses.query(User).filter(User.email == email).first()
-
-        if user:
-            user.password = generate_password_hash(password)
-            ses.commit()
-
-            session.pop('reset_code', None)
-            session.pop('reset_email', None)
-            session.pop('reset_code_time', None)
-            session.pop('reset_last_sent', None)
-
-            ses.close()
-            return redirect('/?reset_success=true')
-
-        ses.close()
-        return redirect('/')
-
-
-@app.route("/resend_reset_code", methods=["POST"])
-def resend_reset_code():
-    """Повторная отправка кода для восстановления пароля"""
-    email = session.get('reset_email')
-    if not email:
-        return {'error': 'Сессия истекла'}, 400
-
-    last_sent = session.get('reset_last_sent', 0)
-    if datetime.now().timestamp() - last_sent < 120:
-        remaining = 120 - int(datetime.now().timestamp() - last_sent)
-        return {'error': f'Подождите {remaining} секунд перед повторной отправкой'}, 429
-
-    code = ''.join(str(secrets.randbelow(10)) for _ in range(6))
-    session['reset_code'] = generate_password_hash(code)
-    session['reset_code_time'] = datetime.now().timestamp()
-    session['reset_last_sent'] = datetime.now().timestamp()
-
-    subject = "Восстановление пароля BinaryClash"
-    body = f"Ваш код для восстановления пароля: {code}"
-
-    if send_email(email, subject, body):
-        return {'success': True}
-    else:
-        return {'error': 'Не удалось отправить письмо'}, 500
 
 
 @app.route('/auth/google')
@@ -516,7 +319,9 @@ def delete_avatar():
 @app.route("/court")
 @login_required
 def court():
-    return render_template('court.html')
+    h = session.get('classic_court')
+    t = h.get('advocate')
+    return f'{t}'
 
 
 @app.route("/about")
@@ -536,81 +341,41 @@ def contact():
 def select_mode():
     return render_template('modes.html')
 
+COURT_MODELS = [
+    {"id": "groq/gpt-oss-120b",        "name": "GPT-OSS 120B",        "service": "Groq",       "strength": 5, "speed": "Мгновенно", "speed_cls": "instant", "russian": "good",   "tokens": "Затратная"},
+    {"id": "groq/llama-3.3-70b",       "name": "Llama 3.3 70B",       "service": "Groq",       "strength": 5, "speed": "Мгновенно", "speed_cls": "instant", "russian": "good",   "tokens": "Средняя"},
+    {"id": "openrouter/nemotron-ultra","name": "Nemotron 3 Ultra",    "service": "OpenRouter", "strength": 5, "speed": "Средне",    "speed_cls": "mid",     "russian": "mid",    "tokens": "Затратная"},
+    {"id": "cerebras/gpt-oss-120b",    "name": "GPT-OSS 120B",        "service": "Cerebras",   "strength": 5, "speed": "Быстро",    "speed_cls": "fast",    "russian": "good",   "tokens": "Затратная"},
+    {"id": "github/gpt-4o",            "name": "GPT-4o",              "service": "GitHub",     "strength": 5, "speed": "Средне",    "speed_cls": "mid",     "russian": "good",   "tokens": "Средняя"},
+    {"id": "github/gpt-4o-mini",       "name": "GPT-4o mini",         "service": "GitHub",     "strength": 5, "speed": "Средне",    "speed_cls": "mid",     "russian": "good",   "tokens": "Экономная"},
+    {"id": "mistral/large",            "name": "Mistral Large",       "service": "Mistral",    "strength": 5, "speed": "Быстро",    "speed_cls": "fast",    "russian": "good",   "tokens": "Затратная"},
+    {"id": "groq/qwen3-32b",           "name": "Qwen 3 32B",          "service": "Groq",       "strength": 4, "speed": "Мгновенно", "speed_cls": "instant", "russian": "good",   "tokens": "Средняя"},
+    {"id": "groq/llama-4-scout",       "name": "Llama 4 Scout 17B",   "service": "Groq",       "strength": 4, "speed": "Мгновенно", "speed_cls": "instant", "russian": "mid",    "tokens": "Средняя"},
+    {"id": "mistral/medium",           "name": "Mistral Medium",      "service": "Mistral",    "strength": 4, "speed": "Быстро",    "speed_cls": "fast",    "russian": "good",   "tokens": "Средняя"},
+    {"id": "cloudflare/deepseek-r1",   "name": "DeepSeek R1 32B",     "service": "Cloudflare", "strength": 4, "speed": "Быстро",    "speed_cls": "fast",    "russian": "good",   "tokens": "Средняя"},
+    {"id": "gigachat/base",            "name": "GigaChat (Сбер)",     "service": "GigaChat",   "strength": 3, "speed": "Средне",    "speed_cls": "mid",     "russian": "native", "tokens": "Средняя"},
+    {"id": "gemini/2.5-flash",         "name": "Gemini 2.5 Flash",    "service": "Gemini",     "strength": 3, "speed": "Средне",    "speed_cls": "mid",     "russian": "good",   "tokens": "Экономная"},
+    {"id": "groq/gpt-oss-20b",         "name": "GPT-OSS 20B",         "service": "Groq",       "strength": 3, "speed": "Мгновенно", "speed_cls": "instant", "russian": "good",   "tokens": "Средняя"},
+]
 
-@app.route('/generate_nickname', methods=['POST'])
+CLASSIC_COURT_ROLES = [
+    {"key": "prosecutor", "name": "Прокурор", "accent": "red",  "desc": "Обвинение. Требует доказать вину и добивается сурового приговора."},
+    {"key": "advocate",   "name": "Адвокат",  "accent": "blue", "desc": "Защита. Ищет слабости обвинения и отстаивает подсудимого."},
+    {"key": "judge",      "name": "Судья",    "accent": "gold", "desc": "Беспристрастный арбитр. Анализирует спор и выносит вердикт."},
+]
+
+
+@app.route('/classic_court/select_model', methods=["GET", "POST"])
 @login_required
-def generate_nickname():
-    with open("nicknames.json", mode='r', encoding='utf-8') as f:
-        nicknames_data = json.load(f)
-
-    ses = db_session.create_session()
-    while True:
-        nick_name = f'{random.choice(nicknames_data)}{random.randint(1, 1000000000)}'
-        if not ses.query(User).filter(User.user_name == nick_name).first():
-            break
-
-    ses.close()
-    return {'nickname': nick_name}
-
-
-AVATAR_FOLDER = os.path.join('static', 'avatars')
-
-
-@app.route('/get_avatars')
-@login_required
-def get_avatars():
-    """Возвращает список доступных аватаров из папки"""
-    avatars = []
-    if os.path.exists(AVATAR_FOLDER):
-        for filename in os.listdir(AVATAR_FOLDER):
-            if filename.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.webp')):
-                avatars.append(f'/static/avatars/{filename}')
-    return {'avatars': avatars}
-
-
-@app.route('/profile/avatar/library', methods=['POST'])
-@login_required
-def set_avatar_from_library():
-    """Устанавливает аватар из библиотеки"""
-    avatar_path = request.form.get('avatar_path')
-    if not avatar_path or not avatar_path.startswith('/static/avatars/'):
-        return redirect('/profile?status=badavatar')
-
-    ses = db_session.create_session()
-    user = ses.query(User).filter(User.id == session['user_id']).first()
-
-    if user:
-        # Загружаем картинку и конвертируем в data-uri
-        try:
-            full_path = os.path.join('.', avatar_path.lstrip('/'))
-            if os.path.exists(full_path):
-                from PIL import Image
-                import io
-                import base64
-
-                img = Image.open(full_path)
-                img = img.convert('RGB')
-
-                # Делаем квадратным
-                width, height = img.size
-                side = min(width, height)
-                left = (width - side) // 2
-                top = (height - side) // 2
-                img = img.crop((left, top, left + side, top + side))
-                img = img.resize((256, 256), Image.LANCZOS)
-
-                buffer = io.BytesIO()
-                img.save(buffer, format='JPEG', quality=85)
-                encoded = base64.b64encode(buffer.getvalue()).decode('ascii')
-                data_uri = f'data:image/jpeg;base64,{encoded}'
-
-                user.avatar = data_uri
-                ses.commit()
-        except Exception as e:
-            app.logger.error(f"Ошибка установки аватара из библиотеки: {e}")
-
-    ses.close()
-    return redirect('/profile?status=avatar_saved')
+def select_models():
+    if request.method == "POST":
+        session['classic_court'] = {
+            'prosecutor': request.form.get('prosecutor'),
+            'advocate': request.form.get('advocate'),
+            'judge': request.form.get('judge'),
+        }
+        return redirect('/court')
+    return render_template('select_models.html', models=COURT_MODELS, roles=CLASSIC_COURT_ROLES)
 
 
 if __name__ == "__main__":

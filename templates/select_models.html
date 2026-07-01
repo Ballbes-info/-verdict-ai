@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+{% block title %}Состав суда — BinaryClash{% endblock %}
+
+{% block content %}
+<div class="sm-page">
+
+    <div class="sm-hero">
+        <div class="sm-hero-badge">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M6 21V10M18 21V10M4 10l8-6 8 6M9 21v-5h6v5"/></svg>
+            Классический суд
+        </div>
+        <h1 class="sm-title">Соберите состав суда</h1>
+        <p class="sm-subtitle">Назначьте нейросеть на каждую роль. Выберите роль слева, затем кликните по модели — она займёт своё место в зале.</p>
+    </div>
+
+    <div class="sm-layout">
+
+        <!-- Роли -->
+        <aside class="sm-roles">
+            {% for role in roles %}
+            <button type="button" class="sm-role sm-role--{{ role.accent }}{% if loop.first %} is-active{% endif %}"
+                    data-role="{{ role.key }}">
+                <div class="sm-role__icon">
+                    {% if role.key == 'prosecutor' %}
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6l6-2 6 2M9 4v14M5 18h8M14.5 9.5l6-6M17 3h4v4M13 13l4 4M21 13v6a1 1 0 0 1-1 1h-6"/></svg>
+                    {% elif role.key == 'advocate' %}
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
+                    {% else %}
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M7 21h10M5 7h14M6 7l-3 6a4 4 0 0 0 6 0L6 7zM18 7l-3 6a4 4 0 0 0 6 0l-3-6z"/></svg>
+                    {% endif %}
+                </div>
+                <div class="sm-role__body">
+                    <span class="sm-role__label">{{ role.name }}</span>
+                    <span class="sm-role__assigned" data-empty="Модель не выбрана">Модель не выбрана</span>
+                </div>
+                <div class="sm-role__check">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+                </div>
+            </button>
+            {% endfor %}
+
+            <div class="sm-progress">
+                <span class="sm-progress__count"><b id="smCount">0</b> из 3 ролей назначено</span>
+                <div class="sm-progress__bar"><span id="smBar"></span></div>
+            </div>
+        </aside>
+
+        <!-- Галерея моделей -->
+        <section class="sm-gallery">
+            <div class="sm-gallery__head">
+                <span class="sm-gallery__hint" id="smHint">Выбираем модель для роли: <b>Прокурор</b></span>
+                <span class="sm-gallery__total">{{ models|length }} моделей · 8 сервисов</span>
+            </div>
+            <div class="sm-grid">
+                {% for m in models %}
+                <button type="button" class="sm-model" data-id="{{ m.id }}" data-name="{{ m.name }}">
+                    <div class="sm-model__badges" aria-hidden="true"></div>
+                    <div class="sm-model__top">
+                        <span class="sm-model__name">{{ m.name }}</span>
+                        <span class="sm-service sm-service--{{ m.service|lower }}">{{ m.service }}</span>
+                    </div>
+                    <div class="sm-model__meta">
+                        <span class="sm-stars" title="Сила модели">
+                            {% for i in range(5) %}<i class="{% if i < m.strength %}on{% endif %}"></i>{% endfor %}
+                        </span>
+                        <span class="sm-chip sm-chip--{{ m.speed_cls }}">{{ m.speed }}</span>
+                        <span class="sm-chip sm-chip--ru-{{ m.russian }}">
+                            {% if m.russian == 'native' %}Русский: родной{% elif m.russian == 'good' %}Русский: ✓{% else %}Русский: ~{% endif %}
+                        </span>
+                    </div>
+                </button>
+                {% endfor %}
+            </div>
+        </section>
+    </div>
+
+    <!-- Панель запуска -->
+    <form class="sm-launch" method="post" id="smForm">
+        <input type="hidden" name="prosecutor" id="inpProsecutor">
+        <input type="hidden" name="advocate" id="inpAdvocate">
+        <input type="hidden" name="judge" id="inpJudge">
+        <div class="sm-launch__summary" id="smSummary"></div>
+        <button type="submit" class="sm-start" id="smStart" disabled>
+            Далее
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+    </form>
+</div>
+
+<script>
+(function() {
+    var roleOrder = ['prosecutor', 'advocate', 'judge'];
+    var roleNames = { prosecutor: 'Прокурор', advocate: 'Адвокат', judge: 'Судья' };
+    var roleShort = { prosecutor: 'П', advocate: 'А', judge: 'С' };
+    var state = { prosecutor: null, advocate: null, judge: null };
+    var active = 'prosecutor';
+
+    var roleEls = {};
+    var inputEls = {
+        prosecutor: document.getElementById('inpProsecutor'),
+        advocate: document.getElementById('inpAdvocate'),
+        judge: document.getElementById('inpJudge')
+    };
+    document.querySelectorAll('.sm-role').forEach(function(el) {
+        roleEls[el.dataset.role] = el;
+        el.addEventListener('click', function() { setActive(el.dataset.role); });
+    });
+
+    var hint = document.getElementById('smHint');
+    var startBtn = document.getElementById('smStart');
+    var summary = document.getElementById('smSummary');
+    var countEl = document.getElementById('smCount');
+    var barEl = document.getElementById('smBar');
+
+    function setActive(role) {
+        active = role;
+        Object.keys(roleEls).forEach(function(k) {
+            roleEls[k].classList.toggle('is-active', k === role);
+        });
+        hint.innerHTML = 'Выбираем модель для роли: <b>' + roleNames[role] + '</b>';
+        refreshModelBadges();
+    }
+
+    function refreshModelBadges() {
+        document.querySelectorAll('.sm-model').forEach(function(card) {
+            var id = card.dataset.id;
+            var badges = card.querySelector('.sm-model__badges');
+            badges.innerHTML = '';
+            var assignedActive = false;
+            roleOrder.forEach(function(role) {
+                if (state[role] && state[role].id === id) {
+                    var b = document.createElement('span');
+                    b.className = 'sm-rb sm-rb--' + role;
+                    b.textContent = roleShort[role];
+                    b.title = roleNames[role];
+                    badges.appendChild(b);
+                    if (role === active) assignedActive = true;
+                }
+            });
+            card.classList.toggle('is-picked', assignedActive);
+        });
+    }
+
+    function refreshRoles() {
+        var count = 0;
+        roleOrder.forEach(function(role) {
+            var el = roleEls[role];
+            var slot = el.querySelector('.sm-role__assigned');
+            if (state[role]) {
+                slot.textContent = state[role].name;
+                el.classList.add('is-filled');
+                inputEls[role].value = state[role].id;
+                count++;
+            } else {
+                slot.textContent = slot.dataset.empty;
+                el.classList.remove('is-filled');
+                inputEls[role].value = '';
+            }
+        });
+        countEl.textContent = count;
+        barEl.style.width = (count / 3 * 100) + '%';
+
+        if (count === 3) {
+            startBtn.disabled = false;
+            summary.innerHTML = '<b>' + state.prosecutor.name + '</b> · <b>' + state.advocate.name + '</b> · <b>' + state.judge.name + '</b> — состав готов';
+        } else {
+            startBtn.disabled = true;
+            summary.textContent = 'Выберите модели для ролей. Далее вы сможете выбрать персонажа.';
+        }
+    }
+
+    document.querySelectorAll('.sm-model').forEach(function(card) {
+        card.addEventListener('click', function() {
+            state[active] = { id: card.dataset.id, name: card.dataset.name };
+            refreshRoles();
+            var next = roleOrder.find(function(r) { return !state[r]; });
+            if (next) setActive(next);
+            else refreshModelBadges();
+        });
+    });
+
+    setActive('prosecutor');
+    refreshRoles();
+})();
+</script>
+{% endblock %}
