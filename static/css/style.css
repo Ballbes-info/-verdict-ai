@@ -2703,3 +2703,134 @@ body.supreme-court .logo-icon svg {
 [data-theme="light"] .sm-launch { background: rgba(251,245,232,0.9); border-top-color: #e3d8c0; }
 [data-theme="light"] .sm-launch__summary { color: #7a6d54; }
 [data-theme="light"] .sm-launch__summary b { color: #2b2418; }
+
+/* ==========================================================================
+   ФИЛЬТРЫ ДЛЯ ВЫБОРА МОДЕЛЕЙ
+   ========================================================================== */
+.sm-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 20px;
+    margin-bottom: 20px;
+    padding: 16px 20px;
+    background: #0d0b09;
+    border: 1px solid #1e1810;
+    border-radius: 14px;
+}
+
+.sm-filter-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.sm-filter-label {
+    font-size: 0.78em;
+    color: #6b5a3a;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+}
+
+.sm-filter-select {
+    background: #161210;
+    border: 1px solid #2a2018;
+    border-radius: 8px;
+    color: #a09888;
+    padding: 6px 12px;
+    font-size: 0.78em;
+    cursor: pointer;
+    outline: none;
+    transition: border 0.3s;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%236b5a3a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    padding-right: 28px;
+    min-width: 100px;
+}
+
+.sm-filter-select:hover {
+    border-color: #3d3630;
+}
+
+.sm-filter-select:focus {
+    border-color: #c9a84c;
+}
+
+.sm-filter-select option {
+    background: #0d0b09;
+    color: #a09888;
+}
+
+/* Пустое состояние */
+.sm-empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: #5a4a30;
+}
+
+.sm-empty span {
+    font-size: 48px;
+    display: block;
+    margin-bottom: 12px;
+}
+
+.sm-empty p {
+    font-size: 0.95em;
+    margin-bottom: 16px;
+}
+
+.sm-empty-reset {
+    background: transparent;
+    border: 1px solid #3d3630;
+    color: #c9a84c;
+    padding: 8px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.sm-empty-reset:hover {
+    background: #c9a84c;
+    color: #1a1208;
+}
+
+/* Светлая тема для фильтров */
+[data-theme="light"] .sm-filters {
+    background: #fffdf7;
+    border-color: #e3d8c0;
+}
+
+[data-theme="light"] .sm-filter-label {
+    color: #8a7a60;
+}
+
+[data-theme="light"] .sm-filter-select {
+    background: #f4ecda;
+    border-color: #ddd0b4;
+    color: #5a4f3a;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%238a7a60' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+}
+
+[data-theme="light"] .sm-filter-select:hover {
+    border-color: #c9a84c;
+}
+
+[data-theme="light"] .sm-filter-select option {
+    background: #fffdf7;
+}
+
+[data-theme="light"] .sm-empty {
+    color: #9b8d70;
+}
+
+[data-theme="light"] .sm-empty-reset {
+    border-color: #ddd0b4;
+    color: #9a7d2e;
+}
+
+[data-theme="light"] .sm-empty-reset:hover {
+    background: #c9a84c;
+    color: #fff;
+}

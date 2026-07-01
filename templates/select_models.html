@@ -10,7 +10,7 @@
             Классический суд
         </div>
         <h1 class="sm-title">Соберите состав суда</h1>
-        <p class="sm-subtitle">Назначьте нейросеть на каждую роль. Выберите роль слева, затем кликните по модели — она займёт своё место в зале.</p>
+        <p class="sm-subtitle">Назначьте нейросеть на каждую роль. Выберите роль, затем кликните по модели — она займёт своё место в зале.</p>
     </div>
 
     <div class="sm-layout">
@@ -49,11 +49,77 @@
         <section class="sm-gallery">
             <div class="sm-gallery__head">
                 <span class="sm-gallery__hint" id="smHint">Выбираем модель для роли: <b>Прокурор</b></span>
-                <span class="sm-gallery__total">{{ models|length }} моделей · 8 сервисов</span>
+                <div class="sm-gallery__controls">
+                    <span class="sm-gallery__total" id="smTotal">{{ models|length }} моделей</span>
+                </div>
             </div>
-            <div class="sm-grid">
+
+            <!-- ФИЛЬТРЫ -->
+            <div class="sm-filters">
+                <div class="sm-filter-group">
+                    <label class="sm-filter-label">⚡ Скорость:</label>
+                    <select id="filterSpeed" class="sm-filter-select">
+                        <option value="all">Все</option>
+                        <option value="instant">Мгновенно</option>
+                        <option value="fast">Быстро</option>
+                        <option value="mid">Средне</option>
+                    </select>
+                </div>
+
+                <div class="sm-filter-group">
+                    <label class="sm-filter-label">⭐ Мощность:</label>
+                    <select id="filterStrength" class="sm-filter-select">
+                        <option value="all">Все</option>
+                        <option value="5">5 ★</option>
+                        <option value="4">4 ★</option>
+                        <option value="3">3 ★</option>
+                        <option value="2">2 ★</option>
+                    </select>
+                </div>
+
+                <div class="sm-filter-group">
+                    <label class="sm-filter-label">🏷️ Сервис:</label>
+                    <select id="filterService" class="sm-filter-select">
+                        <option value="all">Все</option>
+                        {% set services = [] %}
+                        {% for m in models %}
+                            {% if m.service not in services %}
+                                {% set _ = services.append(m.service) %}
+                            {% endif %}
+                        {% endfor %}
+                        {% for s in services|sort %}
+                        <option value="{{ s|lower }}">{{ s }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="sm-filter-group">
+                    <label class="sm-filter-label">💰 Затратность:</label>
+                    <select id="filterTokens" class="sm-filter-select">
+                        <option value="all">Все</option>
+                        <option value="экономная">Экономная</option>
+                        <option value="средняя">Средняя</option>
+                        <option value="затратная">Затратная</option>
+                    </select>
+                </div>
+
+                <div class="sm-filter-group">
+                    <label class="sm-filter-label">🌍 Русский:</label>
+                    <select id="filterRussian" class="sm-filter-select">
+                        <option value="all">Все</option>
+                        <option value="native">Родной</option>
+                        <option value="good">Хорошо</option>
+                        <option value="mid">Средне</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="sm-grid" id="smGrid">
                 {% for m in models %}
-                <button type="button" class="sm-model" data-id="{{ m.id }}" data-name="{{ m.name }}">
+                <button type="button" class="sm-model" data-id="{{ m.id }}" data-name="{{ m.name }}"
+                        data-strength="{{ m.strength }}" data-service="{{ m.service|lower }}"
+                        data-speed="{{ m.speed_cls }}" data-tokens="{{ m.tokens|lower|replace(' ', '_')|replace('ё', 'е') }}"
+                        data-russian="{{ m.russian }}">
                     <div class="sm-model__badges" aria-hidden="true"></div>
                     <div class="sm-model__top">
                         <span class="sm-model__name">{{ m.name }}</span>
@@ -65,11 +131,21 @@
                         </span>
                         <span class="sm-chip sm-chip--{{ m.speed_cls }}">{{ m.speed }}</span>
                         <span class="sm-chip sm-chip--ru-{{ m.russian }}">
-                            {% if m.russian == 'native' %}Русский: родной{% elif m.russian == 'good' %}Русский: ✓{% else %}Русский: ~{% endif %}
+                            {% if m.russian == 'native' %}🇷🇺 Родной{% elif m.russian == 'good' %}🇷🇺 ✓{% else %}🇷🇺 ~{% endif %}
+                        </span>
+                        <span class="sm-chip sm-chip--tokens-{{ m.tokens|lower|replace(' ', '_')|replace('ё', 'е') }}">
+                            {{ m.tokens }}
                         </span>
                     </div>
                 </button>
                 {% endfor %}
+            </div>
+
+            <!-- Пустое состояние -->
+            <div class="sm-empty" id="smEmpty" style="display:none;">
+                <span>🔍</span>
+                <p>Нет моделей, соответствующих выбранным фильтрам</p>
+                <button class="sm-empty-reset" onclick="resetFilters()">Сбросить фильтры</button>
             </div>
         </section>
     </div>
@@ -111,7 +187,64 @@
     var summary = document.getElementById('smSummary');
     var countEl = document.getElementById('smCount');
     var barEl = document.getElementById('smBar');
+    var grid = document.getElementById('smGrid');
+    var empty = document.getElementById('smEmpty');
 
+    // Фильтры
+    var filterSpeed = document.getElementById('filterSpeed');
+    var filterStrength = document.getElementById('filterStrength');
+    var filterService = document.getElementById('filterService');
+    var filterTokens = document.getElementById('filterTokens');
+    var filterRussian = document.getElementById('filterRussian');
+
+    var allCards = Array.from(document.querySelectorAll('.sm-model'));
+
+    // ====== ФИЛЬТРАЦИЯ ======
+    function filterModels() {
+        var speed = filterSpeed.value;
+        var strength = filterStrength.value;
+        var service = filterService.value;
+        var tokens = filterTokens.value;
+        var russian = filterRussian.value;
+
+        var visible = 0;
+
+        allCards.forEach(function(card) {
+            var show = true;
+
+            if (speed !== 'all' && card.dataset.speed !== speed) show = false;
+            if (strength !== 'all' && card.dataset.strength !== strength) show = false;
+            if (service !== 'all' && card.dataset.service !== service) show = false;
+            if (tokens !== 'all' && card.dataset.tokens !== tokens) show = false;
+            if (russian !== 'all' && card.dataset.russian !== russian) show = false;
+
+            card.style.display = show ? '' : 'none';
+            if (show) visible++;
+        });
+
+        // Пустое состояние
+        empty.style.display = visible === 0 ? 'block' : 'none';
+
+        // Обновляем счётчик
+        var totalEl = document.getElementById('smTotal');
+        totalEl.textContent = visible + ' моделей';
+    }
+
+    // Подписываемся на изменения фильтров
+    [filterSpeed, filterStrength, filterService, filterTokens, filterRussian].forEach(function(el) {
+        el.addEventListener('change', filterModels);
+    });
+
+    function resetFilters() {
+        filterSpeed.value = 'all';
+        filterStrength.value = 'all';
+        filterService.value = 'all';
+        filterTokens.value = 'all';
+        filterRussian.value = 'all';
+        filterModels();
+    }
+
+    // ====== РОЛИ ======
     function setActive(role) {
         active = role;
         Object.keys(roleEls).forEach(function(k) {
@@ -181,6 +314,7 @@
 
     setActive('prosecutor');
     refreshRoles();
+    filterModels(); // Применяем фильтры при загрузке
 })();
 </script>
 {% endblock %}
