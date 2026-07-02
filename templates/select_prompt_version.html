@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+{% block title %}Настройка суда — BinaryClash{% endblock %}
+
+{% block content %}
+
+<div class="sp-page">
+    <div class="sp-hero">
+        <div class="sp-hero-badge">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+            Настройка
+        </div>
+        <h1 class="sp-title">Версия промпта и характеры</h1>
+        <p class="sp-subtitle">Выберите качество аргументов и задайте стиль каждой роли</p>
+    </div>
+
+    <form method="post" class="sp-form">
+
+        <!-- ВЕРСИЯ ПРОМПТА -->
+        <div class="sp-section">
+            <h2 class="sp-section-title">Версия промпта</h2>
+            <p class="sp-section-desc">Определяет глубину аргументации и расход токенов</p>
+            <div class="sp-version-grid">
+                {% for v in versions %}
+                <label class="sp-version-card {% if loop.first %}selected{% endif %}">
+                    <input type="radio" name="prompt_version" value="{{ v.key }}" {% if loop.first %}checked{% endif %}>
+                    <div class="sp-version-name">{{ v.name }}</div>
+                    <div class="sp-version-tokens">~{{ v.tokens }} токенов</div>
+                    <div class="sp-version-desc">{{ v.desc }}</div>
+                    <div class="sp-version-tags">
+                        {% for tag in v.tags %}
+                        <span class="sp-version-tag">{{ tag }}</span>
+                        {% endfor %}
+                    </div>
+                </label>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- ХАРАКТЕРЫ -->
+        <div class="sp-section">
+            <h2 class="sp-section-title">Характеры ролей</h2>
+            <p class="sp-section-desc">Задайте стиль общения для каждой роли</p>
+
+            <div class="sp-personality-grid">
+
+                <!-- Прокурор -->
+                <div class="sp-personality-group">
+                    <div class="sp-personality-header sp-personality-header--red">
+                        <span class="sp-personality-role">Прокурор</span>
+                        <span class="sp-personality-desc">Обвинение</span>
+                    </div>
+                    <div class="sp-personality-options">
+                        <select name="prosecutor_personality" class="sp-personality-select" data-role="prosecutor">
+                            <option value="none">Без характера</option>
+                            {% for p in personalities %}
+                            <option value="{{ p.id }}">{{ p.name }} — {{ p.description }}</option>
+                            {% endfor %}
+                        </select>
+                        <div class="sp-personality-preview" id="preview_prosecutor">
+                            <span class="sp-preview-empty">Выберите характер</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Адвокат -->
+                <div class="sp-personality-group">
+                    <div class="sp-personality-header sp-personality-header--blue">
+                        <span class="sp-personality-role">Адвокат</span>
+                        <span class="sp-personality-desc">Защита</span>
+                    </div>
+                    <div class="sp-personality-options">
+                        <select name="advocate_personality" class="sp-personality-select" data-role="advocate">
+                            <option value="none">Без характера</option>
+                            {% for p in personalities %}
+                            <option value="{{ p.id }}">{{ p.name }} — {{ p.description }}</option>
+                            {% endfor %}
+                        </select>
+                        <div class="sp-personality-preview" id="preview_advocate">
+                            <span class="sp-preview-empty">Выберите характер</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Судья -->
+                <div class="sp-personality-group">
+                    <div class="sp-personality-header sp-personality-header--gold">
+                        <span class="sp-personality-role">Судья</span>
+                        <span class="sp-personality-desc">Арбитр</span>
+                    </div>
+                    <div class="sp-personality-options">
+                        <select name="judge_personality" class="sp-personality-select" data-role="judge">
+                            <option value="none">Без характера</option>
+                            {% for p in personalities %}
+                            <option value="{{ p.id }}">{{ p.name }} — {{ p.description }}</option>
+                            {% endfor %}
+                        </select>
+                        <div class="sp-personality-preview" id="preview_judge">
+                            <span class="sp-preview-empty">Выберите характер</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <button type="submit" class="sp-start">
+            Далее
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+    </form>
+</div>
+
+<script>
+    // Предпросмотр характера
+    const personalities = {{ personalities|tojson }};
+
+    document.querySelectorAll('.sp-personality-select').forEach(select => {
+        select.addEventListener('change', function() {
+            const role = this.dataset.role;
+            const preview = document.getElementById('preview_' + role);
+            const selectedId = this.value;
+
+            if (selectedId === 'none') {
+                preview.innerHTML = '<span class="sp-preview-empty">Без характера</span>';
+                return;
+            }
+
+            const personality = personalities.find(p => p.id === selectedId);
+            if (personality) {
+                preview.innerHTML = `
+                    <span class="sp-preview-text">${personality.prompt.length > 120 ? personality.prompt.substring(0, 120) + '...' : personality.prompt}</span>
+                    <span class="sp-preview-name">— ${personality.name}</span>
+                `;
+            }
+        });
+    });
+
+    // Выбор версии
+    document.querySelectorAll('.sp-version-card').forEach(card => {
+        card.addEventListener('click', function() {
+            document.querySelectorAll('.sp-version-card').forEach(c => c.classList.remove('selected'));
+            this.classList.add('selected');
+            this.querySelector('input[type="radio"]').checked = true;
+        });
+    });
+</script>
+
+{% endblock %}

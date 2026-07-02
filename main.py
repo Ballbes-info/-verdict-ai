@@ -15,6 +15,7 @@ from authlib.integrations.flask_client import OAuth
 from PIL import Image
 from dotenv import load_dotenv
 from datetime import datetime
+from court_config import COURT_MODELS, CLASSIC_COURT_ROLES, PROMPT_VERSIONS
 
 load_dotenv()
 
@@ -610,95 +611,6 @@ def select_mode():
     return render_template('modes.html')
 
 
-COURT_MODELS = [
-    # === Groq ===
-    {"id": "groq/llama-3.3-70b-versatile", "name": "Llama 3.3 70B", "service": "Groq", "strength": 5,
-     "speed": "Мгновенно", "speed_cls": "instant", "russian": "good", "tokens": "Средняя"},
-    {"id": "groq/openai-gpt-oss-120b", "name": "GPT-OSS 120B", "service": "Groq", "strength": 5, "speed": "Мгновенно",
-     "speed_cls": "instant", "russian": "good", "tokens": "Затратная"},
-    {"id": "groq/qwen-qwen3-32b", "name": "Qwen 3 32B", "service": "Groq", "strength": 4, "speed": "Мгновенно",
-     "speed_cls": "instant", "russian": "good", "tokens": "Средняя"},
-    {"id": "groq/meta-llama-llama-4-scout-17b-16e-instruct", "name": "Llama 4 Scout 17B", "service": "Groq",
-     "strength": 4, "speed": "Мгновенно", "speed_cls": "instant", "russian": "mid", "tokens": "Средняя"},
-    {"id": "groq/qwen-qwen3.6-27b", "name": "Qwen 3.6 27B", "service": "Groq", "strength": 4, "speed": "Мгновенно",
-     "speed_cls": "instant", "russian": "good", "tokens": "Средняя"},
-    {"id": "groq/llama-3.1-8b-instant", "name": "Llama 3.1 8B", "service": "Groq", "strength": 3, "speed": "Мгновенно",
-     "speed_cls": "instant", "russian": "mid", "tokens": "Экономная"},
-    {"id": "groq/openai-gpt-oss-20b", "name": "GPT-OSS 20B", "service": "Groq", "strength": 3, "speed": "Мгновенно",
-     "speed_cls": "instant", "russian": "good", "tokens": "Средняя"},
-
-    # === Mistral ===
-    {"id": "mistral/mistral-large-latest", "name": "Mistral Large", "service": "Mistral", "strength": 5,
-     "speed": "Быстро", "speed_cls": "fast", "russian": "good", "tokens": "Затратная"},
-    {"id": "mistral/mistral-medium-latest", "name": "Mistral Medium", "service": "Mistral", "strength": 4,
-     "speed": "Быстро", "speed_cls": "fast", "russian": "good", "tokens": "Средняя"},
-    {"id": "mistral/mistral-small-latest", "name": "Mistral Small", "service": "Mistral", "strength": 3,
-     "speed": "Быстро", "speed_cls": "fast", "russian": "good", "tokens": "Экономная"},
-    {"id": "mistral/open-mistral-nemo", "name": "Mistral Nemo", "service": "Mistral", "strength": 3, "speed": "Быстро",
-     "speed_cls": "fast", "russian": "good", "tokens": "Средняя"},
-    {"id": "mistral/ministral-8b-latest", "name": "Ministral 8B", "service": "Mistral", "strength": 3,
-     "speed": "Быстро", "speed_cls": "fast", "russian": "mid", "tokens": "Экономная"},
-    {"id": "mistral/ministral-3b-latest", "name": "Ministral 3B", "service": "Mistral", "strength": 2,
-     "speed": "Быстро", "speed_cls": "fast", "russian": "mid", "tokens": "Экономная"},
-
-    # === OpenRouter ===
-    {"id": "openrouter/nvidia-nemotron-3-ultra-550b-a55b", "name": "Nemotron 3 Ultra", "service": "OpenRouter",
-     "strength": 5, "speed": "Средне", "speed_cls": "mid", "russian": "mid", "tokens": "Затратная"},
-    {"id": "openrouter/nvidia-nemotron-3-super-120b-a12b", "name": "Nemotron 3 Super", "service": "OpenRouter",
-     "strength": 5, "speed": "Средне", "speed_cls": "mid", "russian": "mid", "tokens": "Затратная"},
-    {"id": "openrouter/openai-gpt-oss-120b", "name": "GPT-OSS 120B", "service": "OpenRouter", "strength": 5,
-     "speed": "Средне", "speed_cls": "mid", "russian": "good", "tokens": "Затратная"},
-    {"id": "openrouter/google-gemma-4-26b-a4b-it", "name": "Gemma 4 26B", "service": "OpenRouter", "strength": 4,
-     "speed": "Средне", "speed_cls": "mid", "russian": "mid", "tokens": "Средняя"},
-    {"id": "openrouter/nvidia-nemotron-3-nano-30b-a3b", "name": "Nemotron Nano 30B", "service": "OpenRouter",
-     "strength": 3, "speed": "Средне", "speed_cls": "mid", "russian": "mid", "tokens": "Экономная"},
-    {"id": "openrouter/nvidia-nemotron-nano-9b-v2", "name": "Nemotron Nano 9B", "service": "OpenRouter", "strength": 3,
-     "speed": "Средне", "speed_cls": "mid", "russian": "mid", "tokens": "Средняя"},
-    {"id": "openrouter/cohere-north-mini-code", "name": "North Mini Code", "service": "OpenRouter", "strength": 3,
-     "speed": "Средне", "speed_cls": "mid", "russian": "mid", "tokens": "Экономная"},
-
-    # === GitHub ===
-    {"id": "github/gpt-4o", "name": "GPT-4o", "service": "GitHub", "strength": 5, "speed": "Средне", "speed_cls": "mid",
-     "russian": "good", "tokens": "Средняя"},
-    {"id": "github/gpt-4o-mini", "name": "GPT-4o mini", "service": "GitHub", "strength": 5, "speed": "Средне",
-     "speed_cls": "mid", "russian": "good", "tokens": "Экономная"},
-
-    # === Cerebras ===
-    {"id": "cerebras/gpt-oss-120b", "name": "GPT-OSS 120B", "service": "Cerebras", "strength": 5, "speed": "Быстро",
-     "speed_cls": "fast", "russian": "good", "tokens": "Затратная"},
-    {"id": "cerebras/gemma-4-31b", "name": "Gemma 4 31B", "service": "Cerebras", "strength": 4, "speed": "Быстро",
-     "speed_cls": "fast", "russian": "mid", "tokens": "Средняя"},
-
-    # === Cloudflare ===
-    {"id": "cloudflare/deepseek-r1-distill-qwen-32b", "name": "DeepSeek R1 32B", "service": "Cloudflare", "strength": 4,
-     "speed": "Быстро", "speed_cls": "fast", "russian": "good", "tokens": "Средняя"},
-    {"id": "cloudflare/llama-3.1-8b-instruct", "name": "Llama 3.1 8B", "service": "Cloudflare", "strength": 3,
-     "speed": "Быстро", "speed_cls": "fast", "russian": "mid", "tokens": "Экономная"},
-
-    # === GigaChat ===
-    {"id": "gigachat/gigachat", "name": "GigaChat (Сбер)", "service": "GigaChat", "strength": 3, "speed": "Средне",
-     "speed_cls": "mid", "russian": "native", "tokens": "Средняя"},
-
-    # === Gemini ===
-    {"id": "gemini/gemini-2.5-flash", "name": "Gemini 2.5 Flash", "service": "Gemini", "strength": 3, "speed": "Средне",
-     "speed_cls": "mid", "russian": "good", "tokens": "Экономная"},
-]
-
-CLASSIC_COURT_ROLES = [
-    {"key": "prosecutor", "name": "Прокурор", "accent": "red",
-     "desc": "Обвинение. Требует доказать вину и добивается сурового приговора."},
-    {"key": "advocate", "name": "Адвокат", "accent": "blue",
-     "desc": "Защита. Ищет слабости обвинения и отстаивает подсудимого."},
-    {"key": "judge", "name": "Судья", "accent": "gold",
-     "desc": "Беспристрастный арбитр. Анализирует спор и выносит вердикт."},
-]
-
-PROMPT_VERSIONS = [
-    {"key": "FULL", "name": "FULL — Максимальное качество", "tokens": "1500-4000", "icon": "⭐", "desc": "Детальные аргументы, глубокий анализ"},
-    {"key": "MEDIUM", "name": "MEDIUM — Оптимальный баланс", "tokens": "400-1000", "icon": "⚖️", "desc": "Хорошее качество, экономия токенов"},
-    {"key": "COMPACT", "name": "COMPACT — Быстро и дёшево", "tokens": "100-400", "icon": "⚡", "desc": "Быстрые игры, минимальные затраты"},
-]
-
 @app.route('/classic_court/select_model', methods=["GET", "POST"])
 @login_required
 def select_models():
@@ -716,21 +628,40 @@ def select_models():
 @login_required
 def select_prompt_version():
     if request.method == "POST":
-        # Сохраняем версию промпта
-        session['classic_court']['prompt_version'] = request.form.get('prompt_version')
-        # Сохраняем характеры (пока заглушка)
-        session['classic_court']['personalities'] = {
-            'prosecutor': request.form.get('prosecutor_personality', 'default'),
-            'advocate': request.form.get('advocate_personality', 'default'),
-            'judge': request.form.get('judge_personality', 'default'),
+        court_data = session.get('classic_court', {})
+        court_data['prompt_version'] = request.form.get('prompt_version')
+        court_data['personalities'] = {
+            'prosecutor': request.form.get('prosecutor_personality'),
+            'advocate': request.form.get('advocate_personality'),
+            'judge': request.form.get('judge_personality'),
         }
+        session['classic_court'] = court_data
         return redirect('/classic_court/select_topic')
+
+    try:
+        with open('personalities.json', 'r', encoding='utf-8') as f:
+            personalities = json.load(f)
+    except FileNotFoundError:
+        personalities = []
 
     return render_template(
         'select_prompt_version.html',
         versions=PROMPT_VERSIONS,
-        roles=CLASSIC_COURT_ROLES
+        personalities=personalities
     )
+
+
+@app.route('/classic_court/select_topic', methods=["GET", "POST"])
+@login_required
+def select_topic():
+    if request.method == "POST":
+        court_data = session.get('classic_court', {})
+        court_data['topic'] = request.form.get('topic')
+        session['classic_court'] = court_data
+
+        return redirect('/classic_court/ready')
+
+    return render_template('select_topic.html')
 
 if __name__ == "__main__":
     app.run(debug=True)

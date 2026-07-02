@@ -3267,3 +3267,773 @@ body.supreme-court .logo-icon svg {
         background: #f0f0f0;
         color: #000;
     }
+
+    /* ==========================================================================
+   СТРАНИЦА НАСТРОЙКИ СУДА (select_prompt_version.html)
+   ========================================================================== */
+
+.sp-page {
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 0 20px 60px;
+}
+
+.sp-hero {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.sp-hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.7em;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #5a4a28;
+    border: 1px solid #2a1f18;
+    padding: 6px 16px;
+    border-radius: 20px;
+    background: #161210;
+}
+
+.sp-title {
+    font-size: 2.4em;
+    font-weight: 700;
+    color: #e8ddc7;
+    margin-top: 16px;
+    letter-spacing: 0.5px;
+}
+
+.sp-subtitle {
+    color: #6b5b4a;
+    font-size: 1.05em;
+    margin-top: 6px;
+}
+
+.sp-section {
+    background: #0f0d0b;
+    border: 1px solid #1e1810;
+    border-radius: 16px;
+    padding: 28px 32px;
+    margin-bottom: 24px;
+}
+
+.sp-section-title {
+    color: #e8c25a;
+    font-size: 1.1em;
+    margin-bottom: 4px;
+    letter-spacing: 0.5px;
+}
+
+.sp-section-desc {
+    color: #5a5040;
+    font-size: 0.85em;
+    margin-bottom: 20px;
+}
+
+/* ---- Версии промптов ---- */
+.sp-version-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+}
+
+.sp-version-card {
+    background: #0d0b09;
+    border: 2px solid #1e1810;
+    border-radius: 12px;
+    padding: 18px 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.sp-version-card:hover {
+    border-color: #3a2a18;
+    transform: translateY(-2px);
+}
+
+.sp-version-card.selected {
+    border-color: #c9a84c;
+    box-shadow: 0 0 30px rgba(201, 168, 76, 0.08);
+}
+
+.sp-version-card input {
+    display: none;
+}
+
+.sp-version-icon {
+    font-size: 1.6em;
+    margin-bottom: 6px;
+}
+
+.sp-version-name {
+    color: #e0d5c1;
+    font-weight: 600;
+    font-size: 1em;
+}
+
+.sp-version-tokens {
+    color: #5a5040;
+    font-size: 0.75em;
+    margin: 2px 0 4px;
+}
+
+.sp-version-desc {
+    color: #8a7a60;
+    font-size: 0.82em;
+    line-height: 1.4;
+    margin-bottom: 8px;
+}
+
+.sp-version-tags {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.sp-version-tag {
+    font-size: 0.6em;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 2px 10px;
+    border-radius: 12px;
+    background: #1a1410;
+    border: 1px solid #2a1f18;
+    color: #5a5040;
+}
+
+.sp-version-card.selected .sp-version-tag {
+    border-color: #3a2a18;
+    color: #8a7a60;
+}
+
+/* ---- Характеры ---- */
+.sp-personality-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.sp-personality-group {
+    background: #0d0b09;
+    border: 1px solid #1e1810;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.sp-personality-header {
+    padding: 12px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #1e1810;
+}
+
+.sp-personality-header--prosecutor {
+    background: rgba(201, 76, 76, 0.06);
+    border-left: 3px solid #c94c4c;
+}
+.sp-personality-header--defense {
+    background: rgba(76, 201, 149, 0.06);
+    border-left: 3px solid #4cc995;
+}
+.sp-personality-header--judge {
+    background: rgba(201, 168, 76, 0.06);
+    border-left: 3px solid #c9a84c;
+}
+.sp-personality-header--chaos {
+    background: rgba(201, 76, 149, 0.06);
+    border-left: 3px solid #c94c95;
+}
+.sp-personality-header--debate {
+    background: rgba(76, 149, 201, 0.06);
+    border-left: 3px solid #4c95c9;
+}
+.sp-personality-header--participant {
+    background: rgba(201, 168, 76, 0.04);
+    border-left: 3px solid #c9a84c;
+}
+
+.sp-personality-role {
+    color: #e0d5c1;
+    font-weight: 600;
+    font-size: 0.95em;
+}
+
+.sp-personality-desc {
+    color: #5a5040;
+    font-size: 0.78em;
+}
+
+.sp-personality-options {
+    padding: 14px 18px;
+}
+
+.sp-personality-select {
+    width: 100%;
+    padding: 10px 14px;
+    background: #0a0806;
+    border: 1px solid #2a1f18;
+    border-radius: 8px;
+    color: #e0d5c1;
+    font-size: 0.9em;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.3s ease;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%235a5040' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+}
+
+.sp-personality-select:hover {
+    border-color: #3a2a18;
+}
+
+.sp-personality-select:focus {
+    border-color: #c9a84c;
+    box-shadow: 0 0 20px rgba(201, 168, 76, 0.05);
+}
+
+.sp-personality-select option {
+    background: #0d0b09;
+    color: #e0d5c1;
+}
+
+.sp-personality-preview {
+    margin-top: 10px;
+    padding: 12px 16px;
+    background: #0a0806;
+    border-radius: 8px;
+    border: 1px solid #1a1410;
+    min-height: 50px;
+}
+
+.sp-preview-text {
+    color: #8a7a60;
+    font-size: 0.85em;
+    line-height: 1.6;
+    font-style: italic;
+}
+
+.sp-preview-empty {
+    color: #4a4030;
+    font-style: normal;
+}
+
+.sp-preview-name {
+    color: #c9a84c;
+    font-size: 0.78em;
+    margin-top: 6px;
+    text-align: right;
+}
+
+/* ---- Кнопка запуска ---- */
+.sp-start {
+    display: block;
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, #c9a84c, #8b6914);
+    border: none;
+    border-radius: 12px;
+    color: #1a1208;
+    font-size: 1.1em;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    letter-spacing: 1px;
+}
+
+.sp-start:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(201, 168, 76, 0.25);
+}
+
+.sp-start:active {
+    transform: translateY(0);
+}
+
+/* ---- Адаптив ---- */
+@media (max-width: 768px) {
+    .sp-version-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .sp-personality-header {
+        flex-direction: column;
+        gap: 4px;
+        align-items: flex-start;
+    }
+
+    .sp-title {
+        font-size: 1.8em;
+    }
+
+    .sp-section {
+        padding: 20px 16px;
+    }
+}
+
+/* Светлая тема */
+[data-theme="light"] .sp-section {
+    background: #fffdf7;
+    border-color: #e3d8c0;
+}
+
+[data-theme="light"] .sp-version-card {
+    background: #f8f2e4;
+    border-color: #ddd0b4;
+}
+
+[data-theme="light"] .sp-version-card.selected {
+    border-color: #c9a84c;
+}
+
+[data-theme="light"] .sp-version-name {
+    color: #2b2418;
+}
+
+[data-theme="light"] .sp-version-desc {
+    color: #6e6048;
+}
+
+[data-theme="light"] .sp-personality-group {
+    background: #f8f2e4;
+    border-color: #ddd0b4;
+}
+
+[data-theme="light"] .sp-personality-header {
+    border-bottom-color: #ddd0b4;
+}
+
+[data-theme="light"] .sp-personality-role {
+    color: #2b2418;
+}
+
+[data-theme="light"] .sp-personality-select {
+    background: #f6f0e2;
+    border-color: #ddd0b4;
+    color: #2b2418;
+}
+
+[data-theme="light"] .sp-personality-preview {
+    background: #f6f0e2;
+    border-color: #ddd0b4;
+}
+
+[data-theme="light"] .sp-preview-text {
+    color: #5a4f3a;
+}
+
+/* ==========================================================================
+   СТРАНИЦА НАСТРОЙКИ СУДА (select_prompt_version.html)
+   ========================================================================== */
+
+.sp-page {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 40px 20px 80px;
+}
+
+.sp-hero {
+    text-align: center;
+    margin-bottom: 44px;
+}
+
+.sp-hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.74em;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #8b6914;
+    border: 1px solid #3a2a18;
+    background: rgba(201, 168, 76, 0.06);
+    padding: 6px 14px;
+    border-radius: 20px;
+    margin-bottom: 18px;
+}
+
+.sp-hero-badge svg {
+    stroke: #8b6914;
+}
+
+.sp-title {
+    font-size: 2.6em;
+    font-weight: 800;
+    color: #e8ddc7;
+    letter-spacing: -0.5px;
+}
+
+.sp-subtitle {
+    margin: 14px auto 0;
+    max-width: 560px;
+    color: #7a6d5a;
+    line-height: 1.7;
+    font-size: 1em;
+}
+
+.sp-form {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* ===== СЕКЦИИ ===== */
+.sp-section {
+    background: #0d0b09;
+    border: 1px solid #1e1810;
+    border-radius: 16px;
+    padding: 24px 28px 28px;
+}
+
+.sp-section-title {
+    color: #e8ddc7;
+    font-size: 1.15em;
+    font-weight: 700;
+    margin-bottom: 2px;
+}
+
+.sp-section-desc {
+    color: #6b5a3a;
+    font-size: 0.85em;
+    margin-bottom: 18px;
+}
+
+/* ===== ВЕРСИЯ ПРОМПТА ===== */
+.sp-version-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+}
+
+.sp-version-card {
+    background: #161210;
+    border: 2px solid #2a2018;
+    border-radius: 14px;
+    padding: 18px 16px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.sp-version-card:hover {
+    border-color: #4a3a28;
+    transform: translateY(-2px);
+}
+
+.sp-version-card.selected {
+    border-color: #c9a84c;
+    box-shadow: 0 0 0 1px rgba(201, 168, 76, 0.15);
+}
+
+.sp-version-card input[type="radio"] {
+    display: none;
+}
+
+.sp-version-name {
+    color: #e8ddc7;
+    font-weight: 600;
+    font-size: 0.95em;
+}
+
+.sp-version-tokens {
+    color: #6b5a3a;
+    font-size: 0.7em;
+    margin: 4px 0 6px;
+}
+
+.sp-version-desc {
+    color: #8a7a60;
+    font-size: 0.78em;
+    line-height: 1.4;
+}
+
+.sp-version-tags {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 8px;
+}
+
+.sp-version-tag {
+    font-size: 0.6em;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 2px 10px;
+    border-radius: 12px;
+    background: #1a1410;
+    border: 1px solid #2a1f18;
+    color: #5a5040;
+}
+
+.sp-version-card.selected .sp-version-tag {
+    border-color: #3a2a18;
+    color: #8a7a60;
+}
+
+/* ===== ХАРАКТЕРЫ ===== */
+.sp-personality-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+}
+
+.sp-personality-group {
+    background: #161210;
+    border: 1px solid #2a2018;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.sp-personality-header {
+    padding: 10px 14px;
+    border-bottom: 1px solid #2a2018;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.sp-personality-header--red {
+    border-left: 3px solid #e74c3c;
+}
+.sp-personality-header--blue {
+    border-left: 3px solid #4c8fc9;
+}
+.sp-personality-header--gold {
+    border-left: 3px solid #c9a84c;
+}
+
+.sp-personality-role {
+    font-weight: 700;
+    color: #e8ddc7;
+    font-size: 0.95em;
+}
+
+.sp-personality-desc {
+    font-size: 0.7em;
+    color: #6b5a3a;
+}
+
+.sp-personality-options {
+    padding: 14px;
+}
+
+.sp-personality-select {
+    width: 100%;
+    padding: 8px 12px;
+    background: #0d0b09;
+    border: 1px solid #2a2018;
+    border-radius: 8px;
+    color: #a09888;
+    font-size: 0.82em;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.3s ease;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%236b5a3a' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+}
+
+.sp-personality-select:hover {
+    border-color: #3d3630;
+}
+
+.sp-personality-select:focus {
+    border-color: #c9a84c;
+}
+
+.sp-personality-select option {
+    background: #0d0b09;
+    color: #a09888;
+}
+
+.sp-personality-preview {
+    margin-top: 8px;
+    padding: 10px 12px;
+    background: #0d0b09;
+    border-radius: 8px;
+    border: 1px solid #1a1410;
+    min-height: 36px;
+}
+
+.sp-preview-text {
+    color: #8a7a60;
+    font-size: 0.78em;
+    line-height: 1.5;
+    font-style: italic;
+}
+
+.sp-preview-empty {
+    color: #4a4030;
+    font-style: normal;
+    font-size: 0.78em;
+}
+
+.sp-preview-name {
+    color: #c9a84c;
+    font-size: 0.7em;
+    margin-top: 4px;
+    text-align: right;
+}
+
+/* ===== КНОПКА ===== */
+.sp-start {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 14px 36px;
+    background: linear-gradient(135deg, #f0d080, #c9a84c 55%, #8b6914);
+    border: none;
+    border-radius: 12px;
+    font-size: 1.02em;
+    font-weight: 700;
+    color: #1a1208;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    width: 100%;
+    max-width: 280px;
+    margin: 0 auto;
+}
+
+.sp-start svg {
+    stroke: #1a1208;
+}
+
+.sp-start:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(201, 168, 76, 0.3);
+}
+
+/* ===== АДАПТИВ ===== */
+@media (max-width: 860px) {
+    .sp-version-grid {
+        grid-template-columns: 1fr;
+    }
+    .sp-personality-grid {
+        grid-template-columns: 1fr;
+    }
+    .sp-title {
+        font-size: 1.8em;
+    }
+    .sp-section {
+        padding: 18px 16px;
+    }
+    .sp-start {
+        max-width: 100%;
+    }
+    .sp-personality-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 2px;
+    }
+}
+
+/* ===== СВЕТЛАЯ ТЕМА ===== */
+[data-theme="light"] .sp-hero-badge {
+    color: #9a7d2e;
+    border-color: #e0d4ba;
+    background: rgba(201, 168, 76, 0.10);
+}
+
+[data-theme="light"] .sp-title {
+    color: #2b2418;
+}
+
+[data-theme="light"] .sp-subtitle {
+    color: #7a6d54;
+}
+
+[data-theme="light"] .sp-section {
+    background: #fffdf7;
+    border-color: #e3d8c0;
+}
+
+[data-theme="light"] .sp-section-title {
+    color: #2b2418;
+}
+
+[data-theme="light"] .sp-section-desc {
+    color: #8a7a60;
+}
+
+[data-theme="light"] .sp-version-card {
+    background: #f8f2e4;
+    border-color: #ddd0b4;
+}
+
+[data-theme="light"] .sp-version-card:hover {
+    border-color: #c9a84c;
+}
+
+[data-theme="light"] .sp-version-card.selected {
+    border-color: #c9a84c;
+}
+
+[data-theme="light"] .sp-version-name {
+    color: #2b2418;
+}
+
+[data-theme="light"] .sp-version-desc {
+    color: #7a6d54;
+}
+
+[data-theme="light"] .sp-version-tag {
+    background: #f4ecda;
+    border-color: #e0d4ba;
+    color: #7a6d54;
+}
+
+[data-theme="light"] .sp-version-card.selected .sp-version-tag {
+    border-color: #c9a84c;
+    color: #9a7d2e;
+}
+
+[data-theme="light"] .sp-personality-group {
+    background: #f8f2e4;
+    border-color: #ddd0b4;
+}
+
+[data-theme="light"] .sp-personality-header {
+    border-bottom-color: #ddd0b4;
+}
+
+[data-theme="light"] .sp-personality-role {
+    color: #2b2418;
+}
+
+[data-theme="light"] .sp-personality-desc {
+    color: #8a7a60;
+}
+
+[data-theme="light"] .sp-personality-select {
+    background: #f6f0e2;
+    border-color: #ddd0b4;
+    color: #2b2418;
+}
+
+[data-theme="light"] .sp-personality-select:hover {
+    border-color: #c9a84c;
+}
+
+[data-theme="light"] .sp-personality-preview {
+    background: #f6f0e2;
+    border-color: #ddd0b4;
+}
+
+[data-theme="light"] .sp-preview-text {
+    color: #5a4f3a;
+}
+
+[data-theme="light"] .sp-preview-empty {
+    color: #9b8d70;
+}
+
+
