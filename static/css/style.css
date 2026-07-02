@@ -2834,3 +2834,436 @@ body.supreme-court .logo-icon svg {
     background: #c9a84c;
     color: #fff;
 }
+
+/* ==========================================================================
+   СТРАНИЦА ВЫБОРА ВЕРСИИ ПРОМПТА И ХАРАКТЕРОВ (select_prompt_version.html)
+   ========================================================================== */
+
+.sp-page {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 40px 20px 80px;
+}
+
+.sp-hero {
+    text-align: center;
+    margin-bottom: 44px;
+}
+
+.sp-hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.7em;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #5a4a28;
+    border: 1px solid #2a2018;
+    padding: 4px 14px;
+    border-radius: 20px;
+    margin-bottom: 14px;
+}
+.sp-hero-badge svg { stroke: #5a4a28; }
+
+.sp-title {
+    font-size: 2.4em;
+    font-weight: 700;
+    color: #e8ddc7;
+    letter-spacing: -0.5px;
+}
+
+.sp-subtitle {
+    font-size: 1em;
+    color: #8a7a60;
+    max-width: 560px;
+    margin: 10px auto 0;
+    line-height: 1.6;
+}
+
+.sp-form {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
+
+/* ===== СЕКЦИИ ===== */
+.sp-section {
+    background: #0d0b09;
+    border: 1px solid #1e1810;
+    border-radius: 16px;
+    padding: 28px 32px 32px;
+}
+
+.sp-section-title {
+    color: #e8ddc7;
+    font-size: 1.3em;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.sp-section-desc {
+    color: #6b5a3a;
+    font-size: 0.85em;
+    margin-bottom: 20px;
+}
+
+/* ===== ВЕРСИЯ ПРОМПТА ===== */
+.sp-version-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+}
+
+.sp-version-card {
+    background: #161210;
+    border: 2px solid #2a2018;
+    border-radius: 14px;
+    padding: 20px 18px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.sp-version-card:hover {
+    border-color: #4a3a28;
+    transform: translateY(-2px);
+}
+
+.sp-version-card input[type="radio"] {
+    display: none;
+}
+
+.sp-version-card:has(input:checked) {
+    border-color: #c9a84c;
+    box-shadow: 0 0 0 1px rgba(201, 168, 76, 0.15);
+}
+
+.sp-version-icon {
+    font-size: 2.2em;
+    margin-bottom: 8px;
+}
+
+.sp-version-name {
+    color: #e8ddc7;
+    font-weight: 600;
+    font-size: 0.95em;
+}
+
+.sp-version-tokens {
+    color: #6b5a3a;
+    font-size: 0.7em;
+    margin: 4px 0 6px;
+}
+
+.sp-version-desc {
+    color: #8a7a60;
+    font-size: 0.78em;
+    line-height: 1.4;
+}
+
+/* ===== ХАРАКТЕРЫ ===== */
+.sp-personality-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+.sp-personality-group {
+    background: #161210;
+    border: 1px solid #2a2018;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.sp-personality-header {
+    padding: 12px 16px;
+    border-bottom: 1px solid #2a2018;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.sp-personality-header--red { border-left: 3px solid #e74c3c; }
+.sp-personality-header--blue { border-left: 3px solid #4c8fc9; }
+.sp-personality-header--gold { border-left: 3px solid #c9a84c; }
+
+.sp-personality-role {
+    font-weight: 700;
+    color: #e8ddc7;
+    font-size: 0.95em;
+}
+
+.sp-personality-desc {
+    font-size: 0.7em;
+    color: #6b5a3a;
+}
+
+.sp-personality-options {
+    padding: 16px;
+}
+
+.sp-placeholder {
+    text-align: center;
+    color: #5a4a30;
+    font-size: 0.85em;
+    padding: 12px 0;
+}
+
+/* ===== КНОПКА ===== */
+.sp-start {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 14px 36px;
+    background: linear-gradient(135deg, #f0d080, #c9a84c 55%, #8b6914);
+    border: none;
+    border-radius: 12px;
+    font-size: 1.05em;
+    font-weight: 700;
+    color: #1a1208;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    margin-top: 8px;
+    width: 100%;
+    max-width: 300px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.sp-start:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(201, 168, 76, 0.3);
+}
+
+/* ===== АДАПТИВ ===== */
+@media (max-width: 860px) {
+    .sp-version-grid {
+        grid-template-columns: 1fr;
+    }
+    .sp-personality-grid {
+        grid-template-columns: 1fr;
+    }
+    .sp-title {
+        font-size: 1.8em;
+    }
+    .sp-section {
+        padding: 20px 18px;
+    }
+}
+
+/* ===== СВЕТЛАЯ ТЕМА ===== */
+[data-theme="light"] .sp-hero-badge {
+    color: #9a7d2e;
+    border-color: #e0d4ba;
+}
+
+[data-theme="light"] .sp-title {
+    color: #2b2418;
+}
+
+[data-theme="light"] .sp-subtitle {
+    color: #7a6d54;
+}
+
+[data-theme="light"] .sp-section {
+    background: #fffdf7;
+    border-color: #e3d8c0;
+}
+
+[data-theme="light"] .sp-section-title {
+    color: #2b2418;
+}
+
+[data-theme="light"] .sp-section-desc {
+    color: #8a7a60;
+}
+
+[data-theme="light"] .sp-version-card {
+    background: #f8f2e4;
+    border-color: #ddd0b4;
+}
+
+[data-theme="light"] .sp-version-card:hover {
+    border-color: #c9a84c;
+}
+
+[data-theme="light"] .sp-version-card:has(input:checked) {
+    border-color: #c9a84c;
+}
+
+[data-theme="light"] .sp-version-name {
+    color: #2b2418;
+}
+
+[data-theme="light"] .sp-version-desc {
+    color: #7a6d54;
+}
+
+[data-theme="light"] .sp-personality-group {
+    background: #f8f2e4;
+    border-color: #ddd0b4;
+}
+
+[data-theme="light"] .sp-personality-header {
+    border-bottom-color: #ddd0b4;
+}
+
+[data-theme="light"] .sp-personality-role {
+    color: #2b2418;
+}
+
+[data-theme="light"] .sp-personality-desc {
+    color: #8a7a60;
+}
+
+[data-theme="light"] .sp-placeholder {
+    color: #9b8d70;
+}
+
+/* ==========================================================================
+   ФИЛЬТРЫ (СОРТИРОВКА)
+   ========================================================================== */
+.sm-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    padding: 20px 24px;
+    background: #14110e;
+    border: 1px solid #2a2018;
+    border-radius: 16px;
+    margin-bottom: 24px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.sm-filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+    min-width: 160px;
+}
+
+.sm-filter-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.75em;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #8b7355;
+    font-weight: 600;
+}
+
+.sm-filter-label svg {
+    width: 16px;
+    height: 16px;
+    stroke: #c9a84c;
+}
+
+.sm-filter-select {
+    width: 100%;
+    padding: 10px 36px 10px 14px;
+    background-color: #0d0d0d;
+    border: 1px solid #3a2a18;
+    border-radius: 8px;
+    color: #d4c5a9;
+    font-size: 0.95em;
+    font-family: inherit;
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+
+    /* Кастомная SVG-стрелка */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238b7355' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+}
+
+.sm-filter-select:hover {
+    border-color: #5a4230;
+}
+
+.sm-filter-select:focus {
+    border-color: #c9a84c;
+    background-color: #14110e;
+    box-shadow: 0 0 0 2px rgba(201, 168, 76, 0.15);
+}
+
+/* ---- Поддержка светлой темы ---- */
+[data-theme="light"] .sm-filters {
+    background: #fffdf7;
+    border-color: #e3d8c0;
+    box-shadow: 0 10px 30px rgba(120, 90, 30, 0.05);
+}
+
+[data-theme="light"] .sm-filter-label {
+    color: #7a6d54;
+}
+
+[data-theme="light"] .sm-filter-label svg {
+    stroke: #b8923a;
+}
+
+[data-theme="light"] .sm-filter-select {
+    background-color: #f6f0e2;
+    border-color: #ddd0b4;
+    color: #2b2418;
+}
+
+[data-theme="light"] .sm-filter-select:hover {
+    border-color: #c9a84c;
+}
+
+[data-theme="light"] .sm-filter-select:focus {
+    border-color: #b8923a;
+    background-color: #fffdf7;
+    box-shadow: 0 0 0 2px rgba(184, 146, 58, 0.15);
+}
+
+.sm-reset-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    background: #f0f0f0;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: 0.2s;
+}
+
+.sm-reset-btn:hover {
+    background: #e0e0e0;
+    border-color: #ccc;
+}
+
+.sm-filters {
+        display: flex;
+        align-items: flex-end;
+        gap: 15px;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #eee;
+    }
+    .sm-reset-btn {
+        margin-left: auto;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 12px;
+        background: transparent;
+        border: 1px solid transparent;
+        color: #666;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        border-radius: 6px;
+    }
+    .sm-reset-btn:hover {
+        background: #f0f0f0;
+        color: #000;
+    }

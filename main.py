@@ -693,6 +693,11 @@ CLASSIC_COURT_ROLES = [
      "desc": "Беспристрастный арбитр. Анализирует спор и выносит вердикт."},
 ]
 
+PROMPT_VERSIONS = [
+    {"key": "FULL", "name": "FULL — Максимальное качество", "tokens": "1500-4000", "icon": "⭐", "desc": "Детальные аргументы, глубокий анализ"},
+    {"key": "MEDIUM", "name": "MEDIUM — Оптимальный баланс", "tokens": "400-1000", "icon": "⚖️", "desc": "Хорошее качество, экономия токенов"},
+    {"key": "COMPACT", "name": "COMPACT — Быстро и дёшево", "tokens": "100-400", "icon": "⚡", "desc": "Быстрые игры, минимальные затраты"},
+]
 
 @app.route('/classic_court/select_model', methods=["GET", "POST"])
 @login_required
@@ -703,9 +708,29 @@ def select_models():
             'advocate': request.form.get('advocate'),
             'judge': request.form.get('judge'),
         }
-        return redirect('/court')
+        return redirect('/classic_court/select_prompt_version')
     return render_template('select_models.html', models=COURT_MODELS, roles=CLASSIC_COURT_ROLES)
 
+
+@app.route('/classic_court/select_prompt_version', methods=["GET", "POST"])
+@login_required
+def select_prompt_version():
+    if request.method == "POST":
+        # Сохраняем версию промпта
+        session['classic_court']['prompt_version'] = request.form.get('prompt_version')
+        # Сохраняем характеры (пока заглушка)
+        session['classic_court']['personalities'] = {
+            'prosecutor': request.form.get('prosecutor_personality', 'default'),
+            'advocate': request.form.get('advocate_personality', 'default'),
+            'judge': request.form.get('judge_personality', 'default'),
+        }
+        return redirect('/classic_court/select_topic')
+
+    return render_template(
+        'select_prompt_version.html',
+        versions=PROMPT_VERSIONS,
+        roles=CLASSIC_COURT_ROLES
+    )
 
 if __name__ == "__main__":
     app.run(debug=True)
