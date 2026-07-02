@@ -1,0 +1,480 @@
+{% extends "base.html" %}
+{% block title %}Тема суда — BinaryClash{% endblock %}
+
+{% block content %}
+
+<div class="st-page">
+    <div class="st-hero">
+        <div class="st-hero-badge">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+            Последний шаг
+        </div>
+        <h1 class="st-title">Введите тему суда</h1>
+        <p class="st-subtitle" id="stSubtitle">Опишите ситуацию, которую будут разбирать ИИ-агенты</p>
+    </div>
+
+    <form method="post" class="st-form" id="topicForm">
+
+        <!-- Скрытое поле с версией промпта -->
+        <input type="hidden" name="prompt_version" id="promptVersionHidden" value="{{ prompt_version or 'MEDIUM' }}">
+
+        <div class="st-section">
+            <h2 class="st-section-title">📝 Детали дела</h2>
+            <p class="st-section-desc" id="formDesc">Заполните поля в зависимости от выбранной версии промпта</p>
+
+            <!-- ====== БАЗОВЫЕ ПОЛЯ (для всех версий) ====== -->
+
+            <!-- Тема (обязательно для всех) -->
+            <div class="st-field">
+                <label class="st-label" for="topic">Тема дела <span class="st-required">*</span></label>
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" name="topic" id="topic" class="st-input"
+                           placeholder="Например: Кража сосиски" required style="flex: 1;">
+                    <button type="button" class="st-generate-btn" onclick="generateTopic()">
+                        🎲 Сгенерировать
+                    </button>
+                </div>
+                <span class="st-hint">Краткое название дела</span>
+            </div>
+
+            <!-- ====== FULL ====== -->
+            <div class="st-full-fields" id="fullFields">
+                <div class="st-divider"></div>
+
+                <div class="st-field">
+                    <label class="st-label" for="fullDescription">Описание дела <span class="st-required">*</span></label>
+                    <textarea name="full_description" id="fullDescription" class="st-textarea"
+                              placeholder="Подробно опишите ситуацию. Укажите все обстоятельства, которые могут иметь значение."
+                              maxlength="1000"></textarea>
+                    <span class="st-hint" id="fullCharCount">0 / 1000 символов</span>
+                </div>
+
+                <div class="st-field">
+                    <label class="st-label" for="defendant">Обвиняемый <span class="st-required">*</span></label>
+                    <input type="text" name="defendant" id="defendant" class="st-input"
+                           placeholder="Кто совершил преступление?" required>
+                    <span class="st-hint">Имя или описание подсудимого</span>
+                </div>
+
+                <div class="st-field">
+                    <label class="st-label" for="crime">Преступление <span class="st-required">*</span></label>
+                    <input type="text" name="crime" id="crime" class="st-input"
+                           placeholder="В чём обвиняется подсудимый?" required>
+                    <span class="st-hint">Краткое описание преступления</span>
+                </div>
+
+                <div class="st-field">
+                    <label class="st-label">Улики <span class="st-required">*</span></label>
+                    <div class="st-evidence-list" id="evidenceList">
+                        <div class="st-evidence-item">
+                            <input type="text" name="evidence[]" class="st-input st-evidence-input"
+                                   placeholder="Например: Видео с камеры наблюдения" required>
+                            <button type="button" class="st-remove-evidence" onclick="removeEvidence(this)">✕</button>
+                        </div>
+                    </div>
+                    <button type="button" class="st-add-btn" onclick="addEvidence()">+ Добавить улику</button>
+                    <span class="st-hint">Добавьте все улики по делу (минимум 1)</span>
+                </div>
+
+                <div class="st-field">
+                    <label class="st-label">Свидетели <span class="st-required">*</span></label>
+                    <div class="st-witness-list" id="witnessList">
+                        <div class="st-witness-item">
+                            <input type="text" name="witnesses[]" class="st-input st-witness-input"
+                                   placeholder="Например: Соседка" required>
+                            <button type="button" class="st-remove-witness" onclick="removeWitness(this)">✕</button>
+                        </div>
+                    </div>
+                    <button type="button" class="st-add-btn" onclick="addWitness()">+ Добавить свидетеля</button>
+                    <span class="st-hint">Добавьте всех свидетелей по делу (минимум 1)</span>
+                </div>
+
+                <div class="st-field">
+                    <label class="st-label" for="circumstances">Дополнительные обстоятельства</label>
+                    <textarea name="circumstances" id="circumstances" class="st-textarea"
+                              placeholder="Любые важные детали: отношения между участниками, предыстория, мотивы..."
+                              maxlength="300"></textarea>
+                    <span class="st-hint" id="circumstancesCharCount">0 / 300 символов</span>
+                </div>
+            </div>
+
+            <!-- ====== MEDIUM ====== -->
+            <div class="st-medium-fields" id="mediumFields">
+                <div class="st-divider"></div>
+
+                <div class="st-field">
+                    <label class="st-label" for="mediumDescription">Описание ситуации <span class="st-required">*</span></label>
+                    <textarea name="medium_description" id="mediumDescription" class="st-textarea"
+                              placeholder="Опишите ситуацию подробно. Укажите обстоятельства, участников и суть спора."
+                              maxlength="500"></textarea>
+                    <span class="st-hint" id="mediumCharCount">0 / 500 символов</span>
+                </div>
+
+                <div class="st-field">
+                    <label class="st-label" for="mediumContext">Дополнительный контекст</label>
+                    <input type="text" name="medium_context" id="mediumContext" class="st-input"
+                           placeholder="Любые уточняющие детали (необязательно)">
+                    <span class="st-hint">Краткие дополнения к описанию</span>
+                </div>
+            </div>
+
+            <!-- ====== COMPACT ====== -->
+            <div class="st-compact-fields" id="compactFields">
+                <div class="st-divider"></div>
+
+                <div class="st-field">
+                    <label class="st-label" for="compactDescription">Краткое описание <span class="st-required">*</span></label>
+                    <textarea name="compact_description" id="compactDescription" class="st-textarea st-compact-textarea"
+                              placeholder="Кратко опишите суть дела. Максимум 100 символов."
+                              maxlength="100"></textarea>
+                    <span class="st-hint" id="compactCharCount">0 / 100 символов</span>
+                </div>
+
+                <div class="st-field">
+                    <label class="st-label" for="compactTags">Теги (необязательно)</label>
+                    <input type="text" name="compact_tags" id="compactTags" class="st-input"
+                           placeholder="Кража, сосиска, кот">
+                    <span class="st-hint">Ключевые слова через запятую</span>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="st-actions">
+            <a href="/classic_court/select_prompt_version" class="st-back">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                Назад
+            </a>
+            <button type="submit" class="st-start" id="submitBtn">
+                Начать суд
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+    // ====== ПОЛУЧАЕМ ВЕРСИЮ ПРОМПТА ======
+    const promptVersion = document.getElementById('promptVersionHidden').value || 'MEDIUM';
+
+    // ====== ПОКАЗЫВАЕМ НУЖНЫЕ ПОЛЯ ======
+    const fullFields = document.getElementById('fullFields');
+    const mediumFields = document.getElementById('mediumFields');
+    const compactFields = document.getElementById('compactFields');
+    const subtitle = document.getElementById('stSubtitle');
+    const formDesc = document.getElementById('formDesc');
+
+    fullFields.style.display = 'none';
+    mediumFields.style.display = 'none';
+    compactFields.style.display = 'none';
+
+    if (promptVersion === 'FULL') {
+        fullFields.style.display = 'block';
+        subtitle.textContent = 'Заполните все детали дела для полноценного судебного разбирательства';
+        formDesc.textContent = 'FULL — максимальная детализация: укажите обвиняемого, преступление, улики и свидетелей';
+        document.getElementById('fullDescription').required = true;
+        document.getElementById('defendant').required = true;
+        document.getElementById('crime').required = true;
+        document.getElementById('topic').placeholder = 'Например: Дело о краже сосиски';
+    } else if (promptVersion === 'MEDIUM') {
+        mediumFields.style.display = 'block';
+        subtitle.textContent = 'Опишите ситуацию подробно — чем больше деталей, тем интереснее будет суд';
+        formDesc.textContent = 'MEDIUM — оптимальный баланс: подробное описание ситуации до 500 символов';
+        document.getElementById('mediumDescription').required = true;
+        document.getElementById('topic').placeholder = 'Например: Кража сосиски';
+    } else { // COMPACT
+        compactFields.style.display = 'block';
+        subtitle.textContent = 'Кратко опишите суть дела для быстрого суда';
+        formDesc.textContent = 'COMPACT — быстро и дёшево: краткое описание до 100 символов';
+        document.getElementById('compactDescription').required = true;
+        document.getElementById('topic').placeholder = 'Например: Кража сосиски';
+    }
+
+    // ====== СЧЁТЧИКИ СИМВОЛОВ ======
+    function setupCharCounter(textareaId, counterId, max) {
+        const textarea = document.getElementById(textareaId);
+        const counter = document.getElementById(counterId);
+        if (!textarea || !counter) return;
+
+        textarea.addEventListener('input', function() {
+            const count = this.value.length;
+            counter.textContent = count + ' / ' + max + ' символов';
+            if (count >= max) {
+                counter.style.color = '#ff6b6b';
+                counter.textContent = count + ' / ' + max + ' символов (лимит превышен!)';
+            } else if (count > max * 0.8) {
+                counter.style.color = '#f0d080';
+            } else {
+                counter.style.color = '#6b5a3a';
+            }
+        });
+    }
+
+    setupCharCounter('fullDescription', 'fullCharCount', 1000);
+    setupCharCounter('mediumDescription', 'mediumCharCount', 500);
+    setupCharCounter('compactDescription', 'compactCharCount', 100);
+    setupCharCounter('circumstances', 'circumstancesCharCount', 300);
+
+    // ====== УЛИКИ ======
+    function addEvidence() {
+        const list = document.getElementById('evidenceList');
+        const item = document.createElement('div');
+        item.className = 'st-evidence-item';
+        item.innerHTML = `
+            <input type="text" name="evidence[]" class="st-input st-evidence-input" placeholder="Например: Видео с камеры наблюдения" required>
+            <button type="button" class="st-remove-evidence" onclick="removeEvidence(this)">✕</button>
+        `;
+        list.appendChild(item);
+        updateEvidencePlaceholders();
+    }
+
+    function removeEvidence(btn) {
+        const list = document.getElementById('evidenceList');
+        if (list.children.length > 1) {
+            btn.parentElement.remove();
+        }
+        updateEvidencePlaceholders();
+    }
+
+    function updateEvidencePlaceholders() {
+        const inputs = document.querySelectorAll('.st-evidence-input');
+        const placeholders = [
+            'Например: Видео с камеры наблюдения',
+            'Например: Отпечатки пальцев',
+            'Например: Показания свидетеля',
+            'Например: Документы',
+            'Например: Фото с места преступления'
+        ];
+        inputs.forEach((input, index) => {
+            input.placeholder = placeholders[index % placeholders.length];
+        });
+    }
+
+    // ====== СВИДЕТЕЛИ ======
+    function addWitness() {
+        const list = document.getElementById('witnessList');
+        const item = document.createElement('div');
+        item.className = 'st-witness-item';
+        item.innerHTML = `
+            <input type="text" name="witnesses[]" class="st-input st-witness-input" placeholder="Например: Соседка" required>
+            <button type="button" class="st-remove-witness" onclick="removeWitness(this)">✕</button>
+        `;
+        list.appendChild(item);
+        updateWitnessPlaceholders();
+    }
+
+    function removeWitness(btn) {
+        const list = document.getElementById('witnessList');
+        if (list.children.length > 1) {
+            btn.parentElement.remove();
+        }
+        updateWitnessPlaceholders();
+    }
+
+    function updateWitnessPlaceholders() {
+        const inputs = document.querySelectorAll('.st-witness-input');
+        const placeholders = [
+            'Например: Соседка',
+            'Например: Охранник',
+            'Например: Продавец',
+            'Например: Прохожий'
+        ];
+        inputs.forEach((input, index) => {
+            input.placeholder = placeholders[index % placeholders.length];
+        });
+    }
+
+    // ====== ИНИЦИАЛИЗАЦИЯ ПЛЕЙСХОЛДЕРОВ ======
+    updateEvidencePlaceholders();
+    updateWitnessPlaceholders();
+
+    // ====== ГЕНЕРАЦИЯ ТЕМЫ ======
+    function generateTopic() {
+        const btn = document.querySelector('.st-generate-btn');
+        btn.textContent = '⏳ ...';
+        btn.disabled = true;
+
+        fetch('/generate_topic', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                alert(data.error);
+                return;
+            }
+
+            const topic = data.topic;
+            const version = document.getElementById('promptVersionHidden').value;
+
+            document.getElementById('topic').value = topic.topic;
+
+            if (version === 'FULL') {
+                document.getElementById('fullDescription').value = topic.description || '';
+                document.getElementById('defendant').value = topic.defendant || '';
+                document.getElementById('crime').value = topic.crime || '';
+
+                const evidenceList = document.getElementById('evidenceList');
+                if (topic.evidence && topic.evidence.length > 0) {
+                    evidenceList.innerHTML = '';
+                    topic.evidence.forEach((item) => {
+                        const div = document.createElement('div');
+                        div.className = 'st-evidence-item';
+                        div.innerHTML = `
+                            <input type="text" name="evidence[]" class="st-input st-evidence-input"
+                                   value="${item.replace(/"/g, '&quot;')}" placeholder="Например: Видео с камеры наблюдения" required>
+                            <button type="button" class="st-remove-evidence" onclick="removeEvidence(this)">✕</button>
+                        `;
+                        evidenceList.appendChild(div);
+                    });
+                }
+                if (!topic.evidence || topic.evidence.length === 0) {
+                    addEvidence();
+                }
+
+                const witnessList = document.getElementById('witnessList');
+                if (topic.witnesses && topic.witnesses.length > 0) {
+                    witnessList.innerHTML = '';
+                    topic.witnesses.forEach((item) => {
+                        const div = document.createElement('div');
+                        div.className = 'st-witness-item';
+                        div.innerHTML = `
+                            <input type="text" name="witnesses[]" class="st-input st-witness-input"
+                                   value="${item.replace(/"/g, '&quot;')}" placeholder="Например: Соседка" required>
+                            <button type="button" class="st-remove-witness" onclick="removeWitness(this)">✕</button>
+                        `;
+                        witnessList.appendChild(div);
+                    });
+                }
+                if (!topic.witnesses || topic.witnesses.length === 0) {
+                    addWitness();
+                }
+
+                document.getElementById('circumstances').value = topic.circumstances || '';
+
+            } else if (version === 'MEDIUM') {
+                document.getElementById('mediumDescription').value = topic.description || '';
+                document.getElementById('mediumContext').value = '';
+
+            } else {
+                document.getElementById('compactDescription').value = topic.description || '';
+                document.getElementById('compactTags').value = '';
+            }
+
+            updateCounters();
+            btn.textContent = '🎲 Сгенерировать';
+            btn.disabled = false;
+        })
+        .catch(() => {
+            alert('Ошибка генерации темы');
+            btn.textContent = '🎲 Сгенерировать';
+            btn.disabled = false;
+        });
+    }
+
+    function updateCounters() {
+        document.querySelectorAll('.st-textarea').forEach(textarea => {
+            const event = new Event('input');
+            textarea.dispatchEvent(event);
+        });
+    }
+
+    // ====== ПРОВЕРКА ФОРМЫ ======
+    document.getElementById('topicForm').addEventListener('submit', function(e) {
+        const version = document.getElementById('promptVersionHidden').value;
+        let errors = [];
+
+        if (version === 'FULL') {
+            const evidenceInputs = document.querySelectorAll('input[name="evidence[]"]');
+            let hasEmptyEvidence = false;
+            evidenceInputs.forEach(input => {
+                if (!input.value.trim()) hasEmptyEvidence = true;
+            });
+            if (hasEmptyEvidence) {
+                errors.push('Заполните все улики или удалите пустые поля');
+            }
+
+            const witnessInputs = document.querySelectorAll('input[name="witnesses[]"]');
+            let hasEmptyWitness = false;
+            witnessInputs.forEach(input => {
+                if (!input.value.trim()) hasEmptyWitness = true;
+            });
+            if (hasEmptyWitness) {
+                errors.push('Заполните всех свидетелей или удалите пустые поля');
+            }
+
+            const description = document.getElementById('fullDescription');
+            if (description.value.length < 10) {
+                errors.push('Описание дела должно быть не менее 10 символов');
+            }
+            if (description.value.length > 1000) {
+                errors.push('Описание дела не должно превышать 1000 символов');
+            }
+        }
+
+        if (version === 'MEDIUM') {
+            const description = document.getElementById('mediumDescription');
+            if (description.value.length < 5) {
+                errors.push('Описание должно быть не менее 5 символов');
+            }
+            if (description.value.length > 500) {
+                errors.push('Описание не должно превышать 500 символов');
+            }
+        }
+
+        if (version === 'COMPACT') {
+            const description = document.getElementById('compactDescription');
+            if (description.value.length < 2) {
+                errors.push('Описание должно быть не менее 2 символов');
+            }
+            if (description.value.length > 100) {
+                errors.push('Описание не должно превышать 100 символов');
+            }
+        }
+
+        if (errors.length > 0) {
+            e.preventDefault();
+            alert(errors.join('\n'));
+        }
+    });
+</script>
+
+<style>
+.st-generate-btn {
+    padding: 10px 20px;
+    background: #161210;
+    border: 1px solid #2a2018;
+    border-radius: 8px;
+    color: #c9a84c;
+    cursor: pointer;
+    font-size: 0.85em;
+    white-space: nowrap;
+    transition: all 0.3s ease;
+    font-family: inherit;
+}
+
+.st-generate-btn:hover:not(:disabled) {
+    background: #c9a84c;
+    color: #1a1208;
+    border-color: #c9a84c;
+}
+
+.st-generate-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+[data-theme="light"] .st-generate-btn {
+    background: #f8f2e4;
+    border-color: #ddd0b4;
+    color: #9a7d2e;
+}
+
+[data-theme="light"] .st-generate-btn:hover:not(:disabled) {
+    background: #c9a84c;
+    color: #1a1208;
+}
+</style>
+
+{% endblock %}

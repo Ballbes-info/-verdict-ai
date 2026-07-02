@@ -654,14 +654,59 @@ def select_prompt_version():
 @app.route('/classic_court/select_topic', methods=["GET", "POST"])
 @login_required
 def select_topic():
+    court_data = session.get('classic_court', {})
+    prompt_version = court_data.get('prompt_version', 'MEDIUM')
+
     if request.method == "POST":
-        court_data = session.get('classic_court', {})
         court_data['topic'] = request.form.get('topic')
+
+        if prompt_version == 'FULL':
+            court_data['full_description'] = request.form.get('full_description')
+            court_data['defendant'] = request.form.get('defendant')
+            court_data['crime'] = request.form.get('crime')
+            court_data['evidence'] = request.form.getlist('evidence[]')
+            court_data['witnesses'] = request.form.getlist('witnesses[]')
+            court_data['circumstances'] = request.form.get('circumstances')
+
+        elif prompt_version == 'MEDIUM':
+            court_data['medium_description'] = request.form.get('medium_description')
+            court_data['medium_context'] = request.form.get('medium_context')
+
+        else:  # COMPACT
+            court_data['compact_description'] = request.form.get('compact_description')
+            court_data['compact_tags'] = request.form.get('compact_tags')
+
         session['classic_court'] = court_data
 
         return redirect('/classic_court/ready')
 
-    return render_template('select_topic.html')
+    return render_template(
+        'select_topic.html',
+        prompt_version=prompt_version
+    )
+
+
+@app.route('/generate_topic', methods=['POST'])
+@login_required
+def generate_topic():
+    """Генерирует случайную тему для суда в зависимости от версии промпта"""
+    court_data = session.get('classic_court', {})
+    prompt_version = court_data.get('prompt_version', 'MEDIUM')
+
+    try:
+        with open('topics.json', 'r', encoding='utf-8') as f:
+            topics_data = json.load(f)
+    except FileNotFoundError:
+        return {'error': 'Файл с темами не найден'}, 404
+    topics_list = topics_data.get(prompt_version, [])
+    if not topics_list:
+        return {'error': 'Нет тем для этой версии'}, 404
+
+    # Выбираем случайную тему
+    topic = random.choice(topics_list)
+
+    return {'topic': topic}
+
 
 if __name__ == "__main__":
     app.run(debug=True)
